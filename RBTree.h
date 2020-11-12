@@ -18,6 +18,7 @@ private:
     bool FindHelper(const Int_t& value, NodePtr start_node);
     NodePtr Grandparent(NodePtr node);
     NodePtr Uncle(NodePtr node);
+    NodePtr Sibling(NodePtr node);
     void RotateLeft(NodePtr node);
     void RotateRight(NodePtr node);
     NodePtr Minimum(NodePtr start_node);

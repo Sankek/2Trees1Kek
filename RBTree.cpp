@@ -22,13 +22,13 @@ void RBTree::PrintHelper(NodePtr start_node, std::string indent, bool last){
             indent += "|    ";
         }
 
-        std::string sColor;
+        std::string color_str;
         if (start_node->color == Color::RED){
-            sColor = "RED";
+            color_str = "RED";
         } else {
-            sColor = "BLACK";
+            color_str = "BLACK";
         }
-        std::cout << start_node->data << "(" << sColor << ")" << '\n';
+        std::cout << start_node->data << "(" << color_str << ")" << '\n';
         PrintHelper(start_node->left, indent, false);
         PrintHelper(start_node->right, indent, true);
     }
@@ -37,21 +37,18 @@ void RBTree::PrintHelper(NodePtr start_node, std::string indent, bool last){
 void RBTree::CopyHelper(NodePtr node_copy, NodePtr node) {
     if (node != nullptr) {
         node_copy->data = node->data;
+        node_copy->color = node->color;
 
         if (node->left != nullptr) {
             NodePtr node_copy_left = new RBNode;
             node_copy_left->parent = node_copy;
             node_copy->left = node_copy_left;
-            node_copy_left->data = node->left->data;
-            node_copy_left->color = node->left->color;
         }
 
         if (node->right != nullptr) {
             NodePtr node_copy_right = new RBNode;
             node_copy_right->parent = node_copy;
             node_copy->right = node_copy_right;
-            node_copy_right->data = node->right->data;
-            node_copy_right->color = node->right->color;
         }
 
         CopyHelper(node_copy->left, node->left);
@@ -60,7 +57,7 @@ void RBTree::CopyHelper(NodePtr node_copy, NodePtr node) {
 }
 
 RBTree::RBTree(const RBTree &tree){
-        root = new RBNode;
+    root = new RBNode;
     CopyHelper(root, tree.root);
     }
 
@@ -70,6 +67,7 @@ RBTree& RBTree::operator=(const RBTree &tree){
         return *this;
 
     // do the copy
+    Destroy(root);
     root = new RBNode;
     CopyHelper(root, tree.root);
 
@@ -118,6 +116,13 @@ NodePtr RBTree::Uncle(NodePtr node) {
     }
     else
         return gparent->left;
+}
+
+NodePtr RBTree::Sibling(NodePtr node){
+    if (node == node->parent->left)
+        return node->parent->right;
+    else
+        return node->parent->left;
 }
 
 void RBTree::RotateLeft(NodePtr node) {
@@ -300,9 +305,9 @@ void RBTree::DeleteHelper(const Int_t &value, NodePtr start_node) {
             // and check the right subtree of the min element
             NodePtr r_min = Minimum(start_node->right);
             start_node->data = r_min->data;
-            r_min->parent->left = r_min->right;
+            start_node->right = r_min->right;
             if (r_min->right){
-                r_min->right->parent = r_min->parent;
+                r_min->right->parent = start_node;
             }
             delete r_min;
         }
@@ -310,11 +315,23 @@ void RBTree::DeleteHelper(const Int_t &value, NodePtr start_node) {
 }
 
 void RBTree::DeleteCase1(NodePtr node) {
-
+    if (node->parent != nullptr){
+        DeleteCase2(node);
+    }
 }
 
 void RBTree::DeleteCase2(NodePtr node) {
+    NodePtr s = Sibling(node);
 
+    if (s->color == Color::RED) {
+        node->parent->color = Color::RED;
+        s->color = Color::BLACK;
+        if (node == node->parent->left)
+            RotateLeft(node->parent);
+        else
+            RotateRight(node->parent);
+    }
+    DeleteCase3(node);
 }
 
 void RBTree::DeleteCase3(NodePtr node) {
