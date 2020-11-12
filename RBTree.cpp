@@ -167,23 +167,23 @@ NodePtr RBTree::Minimum(NodePtr start_node) {
 }
 
 void RBTree::InsertHelper(const Int_t &value) {
-    NodePtr node = new RBNode;
-    node->data = value;
-    node->color = Color::RED;
+
 
     NodePtr node_parent{};
     NodePtr x = root;
     while (x != nullptr) {
         node_parent = x;
-        if (node->data < x->data) {
+        if (value < x->data) {
             x = x->left;
-        } else if (node->data > x->data){
+        } else if (value > x->data){
             x = x->right;
         } else { // repetitions are skipped
-            delete node;
             return;
         }
     }
+    NodePtr node = new RBNode;
+    node->data = value;
+    node->color = Color::RED;
 
     node->parent = node_parent;
     if (node_parent == nullptr) {
