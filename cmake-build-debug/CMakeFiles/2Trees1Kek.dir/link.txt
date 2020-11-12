@@ -1,3 +1,0 @@
-D:\Programs\CLion\bin\cmake\win\bin\cmake.exe -E remove -f CMakeFiles\2Trees1Kek.dir/objects.a
-D:\Programs\MinGW\bin\ar.exe cr CMakeFiles\2Trees1Kek.dir/objects.a @CMakeFiles\2Trees1Kek.dir\objects1.rsp
-D:\Programs\MinGW\bin\g++.exe -g   -Wl,--whole-archive CMakeFiles\2Trees1Kek.dir/objects.a -Wl,--no-whole-archive  -o 2Trees1Kek.exe -Wl,--out-implib,lib2Trees1Kek.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\2Trees1Kek.dir\linklibs.rsp
