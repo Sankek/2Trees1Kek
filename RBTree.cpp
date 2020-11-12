@@ -167,23 +167,22 @@ NodePtr RBTree::Minimum(NodePtr start_node) {
 }
 
 void RBTree::InsertHelper(const Int_t &value) {
-    NodePtr node = new RBNode;
-    node->data = value;
-    node->color = Color::RED;
-
     NodePtr node_parent{};
     NodePtr x = root;
     while (x != nullptr) {
         node_parent = x;
-        if (node->data < x->data) {
+        if (value < x->data) {
             x = x->left;
-        } else if (node->data > x->data){
+        } else if (value > x->data){
             x = x->right;
         } else { // repetitions are skipped
-            delete node;
             return;
         }
     }
+
+    NodePtr node = new RBNode;
+    node->data = value;
+    node->color = Color::RED;
 
     node->parent = node_parent;
     if (node_parent == nullptr) {
@@ -286,12 +285,14 @@ void RBTree::DeleteHelper(const Int_t &value, NodePtr start_node) {
             NodePtr del_node = start_node->left;
             start_node->data = del_node->data;
             start_node->right = del_node->right;
-
             start_node->left = del_node->left;
             delete del_node;
         } else if (start_node->left == nullptr){
-            start_node->data = start_node->right->data;
-            delete start_node->right;
+            NodePtr del_node = start_node->right;
+            start_node->data = del_node->data;
+            start_node->right = del_node->right;
+            start_node->left = del_node->left;
+            delete del_node;
         } else {
             // in this case start_node has 2 subtrees,
             // we find min element in the right subtree and

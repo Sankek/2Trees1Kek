@@ -14,6 +14,12 @@ D:/Projects/Cpp/2Trees1Kek/RBNode.h
 cstdint
 -
 
+D:/Projects/Cpp/2Trees1Kek/RBTree.cpp
+iostream
+-
+RBTree.h
+D:/Projects/Cpp/2Trees1Kek/RBTree.h
+
 D:/Projects/Cpp/2Trees1Kek/RBTree.h
 cstdint
 -
@@ -23,10 +29,4 @@ ITree.h
 D:/Projects/Cpp/2Trees1Kek/ITree.h
 RBNode.h
 D:/Projects/Cpp/2Trees1Kek/RBNode.h
-
-D:/Projects/Cpp/2Trees1Kek/main.cpp
-iostream
--
-RBTree.h
-D:/Projects/Cpp/2Trees1Kek/RBTree.h
 
