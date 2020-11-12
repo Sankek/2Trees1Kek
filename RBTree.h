@@ -14,7 +14,7 @@ private:
     NodePtr root{};
 
     void Destroy(NodePtr node);
-    void copyHelper(NodePtr node_copy, NodePtr node);
+    void CopyHelper(NodePtr node_copy, NodePtr node);
     bool FindHelper(const Int_t& value, NodePtr start_node);
     NodePtr Grandparent(NodePtr node);
     NodePtr Uncle(NodePtr node);

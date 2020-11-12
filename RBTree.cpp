@@ -34,7 +34,7 @@ void RBTree::PrintHelper(NodePtr start_node, std::string indent, bool last){
     }
 }
 
-void RBTree::copyHelper(NodePtr node_copy, NodePtr node) {
+void RBTree::CopyHelper(NodePtr node_copy, NodePtr node) {
     if (node != nullptr) {
         node_copy->data = node->data;
 
@@ -54,14 +54,14 @@ void RBTree::copyHelper(NodePtr node_copy, NodePtr node) {
             node_copy_right->color = node->right->color;
         }
 
-        copyHelper(node_copy->left, node->left);
-        copyHelper(node_copy->right, node->right);
+        CopyHelper(node_copy->left, node->left);
+        CopyHelper(node_copy->right, node->right);
     }
 }
 
 RBTree::RBTree(const RBTree &tree){
         root = new RBNode;
-        copyHelper(root, tree.root);
+    CopyHelper(root, tree.root);
     }
 
 RBTree& RBTree::operator=(const RBTree &tree){
@@ -71,7 +71,7 @@ RBTree& RBTree::operator=(const RBTree &tree){
 
     // do the copy
     root = new RBNode;
-    copyHelper(root, tree.root);
+    CopyHelper(root, tree.root);
 
     return *this;
 }
@@ -263,7 +263,7 @@ void RBTree::InsertCase5(NodePtr node) {
 
 
 void RBTree::DeleteHelper(const Int_t &value, NodePtr start_node) {
-    if (root == nullptr){
+    if (start_node == nullptr){
         return;
     }
 
@@ -301,6 +301,9 @@ void RBTree::DeleteHelper(const Int_t &value, NodePtr start_node) {
             NodePtr r_min = Minimum(start_node->right);
             start_node->data = r_min->data;
             r_min->parent->left = r_min->right;
+            if (r_min->right){
+                r_min->right->parent = r_min->parent;
+            }
             delete r_min;
         }
     }
