@@ -184,11 +184,10 @@ void RBTree::InsertHelper(const Int_t &value) {
             return;
         }
     }
-
     NodePtr node = new RBNode;
     node->data = value;
     node->color = Color::RED;
-
+    
     node->parent = node_parent;
     if (node_parent == nullptr) {
         root = node;
