@@ -281,14 +281,26 @@ void RBTree::DeleteHelper(const Int_t &value, NodePtr start_node) {
                     start_node->parent->right = nullptr;
                 }
             }
-
             delete start_node;
         } else if (start_node->right == nullptr){
-            start_node->data = start_node->left->data;
-            delete start_node->left;
+            NodePtr del_node = start_node->left;
+            start_node->data = del_node->data;
+            start_node->right = del_node->right;
+
+            start_node->left = del_node->left;
+            delete del_node;
         } else if (start_node->left == nullptr){
             start_node->data = start_node->right->data;
             delete start_node->right;
+        } else {
+            // in this case start_node has 2 subtrees,
+            // we find min element in the right subtree and
+            // copy data from there to start_node, delete min element
+            // and check the right subtree of the min element
+            NodePtr r_min = Minimum(start_node->right);
+            start_node->data = r_min->data;
+            r_min->parent->left = r_min->right;
+            delete r_min;
         }
     }
 }

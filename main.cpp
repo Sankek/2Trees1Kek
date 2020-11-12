@@ -12,6 +12,13 @@ int main() {
     tree.Insert(5);
     tree.Insert(2);
 
+    std::cout << "---\tTree 1\t\n";
     tree.PrettyPrint();
+
+    tree.Delete(1);
+    tree.Delete(5);
+    std::cout << "---\tTree 1 after deleting\t\n";
+    tree.PrettyPrint();
+
     return 0;
 }
