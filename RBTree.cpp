@@ -75,11 +75,13 @@ RBTree& RBTree::operator=(const RBTree &tree){
 }
 
 void RBTree::Destroy(NodePtr node){
-    if (node->left){
-        Destroy(node->left);
-    }
-    if (node->right){
-        Destroy(node->right);
+    if (node) {
+        if (node->left) {
+            Destroy(node->left);
+        }
+        if (node->right) {
+            Destroy(node->right);
+        }
     }
     delete node;
 }
@@ -187,7 +189,7 @@ void RBTree::InsertHelper(const Int_t &value) {
     NodePtr node = new RBNode;
     node->data = value;
     node->color = Color::RED;
-    
+
     node->parent = node_parent;
     if (node_parent == nullptr) {
         root = node;
@@ -272,9 +274,17 @@ void RBTree::DeleteHelper(const Int_t &value, NodePtr start_node) {
     }
 
     if (value > start_node->data){
-        DeleteHelper(value, start_node->right);
+        if (start_node->right){
+            DeleteHelper(value, start_node->right);
+        } else {
+            return;
+        }
     } else if (value < start_node->data){
-        DeleteHelper(value, start_node->left);
+        if (start_node->left){
+            DeleteHelper(value, start_node->left);
+        } else {
+            return;
+        }
     } else { // value == data in start node
         if ((start_node->left == nullptr) && (start_node->right == nullptr)){
             if (start_node->parent){
@@ -334,18 +344,64 @@ void RBTree::DeleteCase2(NodePtr node) {
 }
 
 void RBTree::DeleteCase3(NodePtr node) {
+    NodePtr s = Sibling(node);
 
+    if ((node->parent->color == Color::BLACK) &&
+        (s->color == Color::BLACK) &&
+        (s->left->color == Color::BLACK) &&
+        (s->right->color == Color::BLACK)) {
+        s->color = Color::RED;
+        DeleteCase1(node->parent);
+    } else
+        DeleteCase4(node);
 }
 
 void RBTree::DeleteCase4(NodePtr node) {
+    NodePtr s = Sibling(node);
 
+    if ((node->parent->color == Color::RED) &&
+        (s->color == Color::BLACK) &&
+        (s->left->color == Color::BLACK) &&
+        (s->right->color == Color::BLACK)) {
+        s->color = Color::RED;
+        node->parent->color = Color::BLACK;
+    } else
+        DeleteCase5(node);
 }
 
 void RBTree::DeleteCase5(NodePtr node) {
+    NodePtr s = Sibling(node);
 
+    if  (s->color == Color::BLACK) {
+        if ((node == node->parent->left) &&
+            (s->right->color == Color::BLACK) &&
+            (s->left->color == Color::RED)) {
+            s->color = Color::RED;
+            s->left->color = Color::BLACK;
+            RotateRight(s);
+        } else if ((node == node->parent->right) &&
+                   (s->left->color == Color::BLACK) &&
+                   (s->right->color == Color::RED)) {
+            s->color = Color::RED;
+            s->right->color = Color::BLACK;
+            RotateLeft(s);
+        }
+    }
+    DeleteCase6(node);
 }
 
 void RBTree::DeleteCase6(NodePtr node) {
+    NodePtr s = Sibling(node);
 
+    s->color = node->parent->color;
+    node->parent->color = Color::BLACK;
+
+    if (node == node->parent->left) {
+        s->right->color = Color::BLACK;
+        RotateLeft(node->parent);
+    } else {
+        s->left->color = Color::BLACK;
+        RotateRight(node->parent);
+    }
 }
 
