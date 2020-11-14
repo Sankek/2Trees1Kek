@@ -22,17 +22,17 @@ public:
     }
 };
 
-int getRandomNumber(int min, int max)
-{
-    static const double fraction = 1.0 / (static_cast<double>(RAND_MAX) + 1.0);
-    return static_cast<int>(rand() * fraction * (max - min + 1) + min);
-}
+//int getRandomNumber(int min, int max)
+//{
+//    static const double fraction = 1.0 / (static_cast<double>(RAND_MAX) + 1.0);
+//    return static_cast<int>(rand() * fraction * (max - min + 1) + min);
+//}
 
 template <class T>
-double time_1000_iterations(RBTree &tree, uint64_t max, T func) {
+double time_1000_iterations(RBTree &tree, uint64_t max, T func, bool copy=false) {
     const int num_executions = 999;
     Timer time_it;
-//    RBTree temp_tree;
+    RBTree temp_tree;
     bool out;
     uint64_t inp_num;
     double time, average_time = 0;
@@ -46,15 +46,16 @@ double time_1000_iterations(RBTree &tree, uint64_t max, T func) {
         first_input = 1;
     }
 
+    temp_tree = tree;
     for (int i = 0; i < 1000; ++i) {
         if (i % 100 == 0) { std::cout << '#'; }
 //        inp_num = getRandomNumber(1, max);
-//        temp_tree = tree;
+        if (copy){ temp_tree = tree; }
         inp_num = first_input;
         time_it.reset();
         for (int j = 0; j < num_executions; ++j) {
 //            temp_tree.prettyPrint();
-            out = func(tree, inp_num);
+            out = func(temp_tree, inp_num);
             if (enough_size) {inp_num ++;}
 //            temp_tree.prettyPrint();
         }
