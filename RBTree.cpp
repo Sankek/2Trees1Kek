@@ -91,6 +91,8 @@ bool RBTree::FindHelper(const Int_t &value, NodePtr start_node) {
         if(value == start_node->data){
             return true;
         }
+
+        // TODO: Rewrite as while-loop
         if(value < start_node->data){
             return FindHelper(value, start_node->left);
         } else {
@@ -101,31 +103,18 @@ bool RBTree::FindHelper(const Int_t &value, NodePtr start_node) {
     }
 }
 
-NodePtr RBTree::Grandparent(NodePtr node) {
-    if ((node != nullptr) && (node->parent != nullptr))
-        return node->parent->parent;
-    else
-        return nullptr;
-}
+NodePtr RBTree::left(NodePtr n){return        (n == nullptr) ? nullptr : n->left; }
+NodePtr RBTree::right(NodePtr n){return       (n == nullptr) ? nullptr : n->right; }
+Color RBTree::color(NodePtr n){return         (n == nullptr) ? Color::BLACK : Color::RED; }
+bool RBTree::is_red(NodePtr n){return         (n != nullptr) && (n->color == Color::RED); }
+bool RBTree::is_black(NodePtr n){return       (n == nullptr) || (n->color == Color::BLACK); }
+NodePtr RBTree::parent(NodePtr n){return      (n == nullptr) ? nullptr : n->parent; }
+NodePtr RBTree::grandparent(NodePtr n){return parent(parent(n)); }
+NodePtr RBTree::brother(NodePtr n){return     (n == left(parent(n))) ? right(parent(n)) : left(parent(n)); }
+NodePtr RBTree::uncle(NodePtr n){return       (parent(n)) == left(grandparent(n)) ? right(grandparent(n)) : left(grandparent(n)); }
+NodePtr RBTree::leftmost(NodePtr n) { return  (left(n) == nullptr) ? n : leftmost(left(n)); }
+NodePtr RBTree::rightmost(NodePtr n) { return (right(n) == nullptr) ? n : rightmost(right(n)); }
 
-NodePtr RBTree::Uncle(NodePtr node) {
-    NodePtr gparent = Grandparent(node);
-    if (gparent == nullptr){
-        return nullptr;
-    }
-    if (node->parent == gparent->left){
-        return gparent->right;
-    }
-    else
-        return gparent->left;
-}
-
-NodePtr RBTree::Sibling(NodePtr node){
-    if (node == node->parent->left)
-        return node->parent->right;
-    else
-        return node->parent->left;
-}
 
 void RBTree::RotateLeft(NodePtr node) {
     NodePtr pivot = node->right;
@@ -165,13 +154,6 @@ void RBTree::RotateRight(NodePtr node) {
     pivot->right = node;
 }
 
-NodePtr RBTree::Minimum(NodePtr start_node) {
-    if (start_node->left){
-        return Minimum(start_node->left);
-    } else {
-        return start_node;
-    }
-}
 
 void RBTree::InsertHelper(const Int_t &value) {
     NodePtr node_parent{};
@@ -224,13 +206,13 @@ void RBTree::InsertCase2(NodePtr node) {
 }
 
 void RBTree::InsertCase3(NodePtr node) {
-    NodePtr uncle = Uncle(node);
+    NodePtr u = uncle(node);
     NodePtr gparent{};
 
-    if ((uncle != nullptr) && (uncle->color == Color::RED)) {
+    if ((u != nullptr) && (u->color == Color::RED)) {
         node->parent->color = Color::BLACK;
-        uncle->color = Color::BLACK;
-        gparent = Grandparent(node);
+        u->color = Color::BLACK;
+        gparent = grandparent(node);
         gparent->color = Color::RED;
         InsertCase1(gparent);
     } else {
@@ -240,7 +222,7 @@ void RBTree::InsertCase3(NodePtr node) {
 
 void RBTree::InsertCase4(NodePtr node) {
     NodePtr parent = node->parent;
-    NodePtr gparent = Grandparent(node);
+    NodePtr gparent = grandparent(node);
 
     if ((node == parent->right) && (parent == gparent->left)) {
         RotateLeft(parent);
@@ -256,7 +238,7 @@ void RBTree::InsertCase4(NodePtr node) {
 
 void RBTree::InsertCase5(NodePtr node) {
     NodePtr parent = node->parent;
-    NodePtr gparent = Grandparent(node);
+    NodePtr gparent = grandparent(node);
 
     if (node == parent->left) {
         RotateRight(gparent);
@@ -268,57 +250,155 @@ void RBTree::InsertCase5(NodePtr node) {
 }
 
 
-void RBTree::DeleteHelper(const Int_t &value, NodePtr start_node) {
-    if (start_node == nullptr){
+void RBTree::DeleteHelper(const Int_t &value, NodePtr node) {
+    while(node != nullptr) {
+        if (value < node->data) {
+            node = node->left;
+        } else if (value > node->data) {
+            node = node->right;
+        } else {
+            break;
+        }
+    }
+    if (node == nullptr){
         return;
     }
 
-    if (value > start_node->data){
-        if (start_node->right){
-            DeleteHelper(value, start_node->right);
+//    if ((node->left != nullptr) && (node->right != nullptr)){
+//        NodePtr lm = leftmost(node->right);
+//        node->data = lm->data;
+//        node = lm;
+//    }
+
+    if ((node->left != nullptr) && (node->right != nullptr)){
+        NodePtr rm = rightmost(node->left);
+        node->data = rm->data;
+        node = rm;
+    }
+
+    NodePtr child = (node->left == nullptr) ? node->right : node->left;
+    if (child != nullptr){
+        if (node == root){
+            root = child;
+        } else if (node->parent->left == node){
+            node->parent->left = child;
         } else {
-            return;
+            node->parent->right = child;
         }
-    } else if (value < start_node->data){
-        if (start_node->left){
-            DeleteHelper(value, start_node->left);
+        child->parent = node->parent;
+        if (is_black(node)){
+            DeleteFix(child);
+        }
+    } else {
+        if (node == root){
+            root = nullptr;
+        }
+        if (is_black(node)){
+            DeleteFix(node);
+        }
+        if (node->parent->left == node){
+            node->parent->left = nullptr;
         } else {
-            return;
+            node->parent->right = nullptr;
         }
-    } else { // value == data in start node
-        if ((start_node->left == nullptr) && (start_node->right == nullptr)){
-            if (start_node->parent){
-                if (start_node->parent->data > value){
-                    start_node->parent->left = nullptr;
-                } else {
-                    start_node->parent->right = nullptr;
+    }
+
+    delete node;
+
+//    if ((node->left == nullptr) && (node->right == nullptr)){
+//        if (node->parent){
+//            if (node->parent->left == node){
+//                node->parent->left = nullptr;
+//            } else {
+//                node->parent->right = nullptr;
+//            }
+//            if (node->color == Color::BLACK){
+//                DeleteCase1(node);
+//            }
+//        } else {
+//            delete node;
+//            root = nullptr;
+//        }
+//    } else if (node->right == nullptr){
+//        NodePtr del_node = node->left;
+//        node->data = del_node->data;
+//        node->right = del_node->right;
+//        node->left = del_node->left;
+//        delete del_node;
+//    } else if (node->left == nullptr){
+//        NodePtr del_node = node->right;
+//        node->data = del_node->data;
+//        node->right = del_node->right;
+//        node->left = del_node->left;
+//        delete del_node;
+//    } else {
+//        NodePtr r_min = leftmost(node->right);
+//        node->data = r_min->data;
+//        if (r_min->right) {
+//            if (r_min->parent->left == r_min) {
+//                r_min->parent->left = r_min->right;
+//            } else {
+//                r_min->parent->right = r_min->right;
+//            }
+//            r_min->right->parent = r_min->parent;
+//        }
+//
+//        DeleteCase1(r_min);
+//        delete r_min;
+//    }
+
+}
+
+void RBTree::DeleteFix(NodePtr node){
+    while (node != root && is_black(node)) {
+        if (node == left(parent(node))) {
+            NodePtr bro = brother(node);
+            if (is_red(bro)) {
+                bro->color = Color::BLACK;
+                parent(node)->color = Color::RED;
+                RotateLeft(parent(node));
+                bro = brother(node);
+            }
+            if (is_black(left(bro)) && is_black(right(bro))) {
+                bro->color = Color::RED;
+                node = parent(node);
+            } else {
+                if (is_black(right(bro))) {
+                    left(bro)->color = Color::BLACK;
+                    bro->color = Color::RED;
+                    RotateRight(bro);
+                    bro = brother(node);
                 }
+                bro->color = color(parent(node));
+                parent(node)->color = Color::BLACK;
+                right(bro)->color = Color::BLACK;
+                RotateLeft(parent(node));
+                node = root;
             }
-            delete start_node;
-        } else if (start_node->right == nullptr){
-            NodePtr del_node = start_node->left;
-            start_node->data = del_node->data;
-            start_node->right = del_node->right;
-            start_node->left = del_node->left;
-            delete del_node;
-        } else if (start_node->left == nullptr){
-            NodePtr del_node = start_node->right;
-            start_node->data = del_node->data;
-            start_node->right = del_node->right;
-            start_node->left = del_node->left;
-            delete del_node;
         } else {
-            // in this case start_node has 2 subtrees,
-            // we find min element in the right subtree and
-            // copy data from there to start_node, delete min element
-            // and check the right subtree of the min element
-            NodePtr r_min = Minimum(start_node->right);
-            start_node->data = r_min->data;
-            start_node->right = r_min->right;
-            if (r_min->right){
-                r_min->right->parent = start_node;
+            NodePtr bro = brother(node);
+            if (is_red(bro)) {
+                bro->color = Color::BLACK;
+                parent(node)->color = Color::RED;
+                RotateRight(parent(node));
+                bro = brother(node);
             }
-            delete r_min;
+            if (is_black(left(bro)) && is_black(right(bro))) {
+                bro->color = Color::RED;
+                node = parent(node);
+            } else {
+                if (is_black(left(bro))) {
+                    right(bro)->color = Color::BLACK;
+                    bro->color = Color::RED;
+                    RotateLeft(bro);
+                    bro = brother(node);
+                }
+                bro->color = color(parent(node));
+                parent(node)->color = Color::BLACK;
+                right(bro)->color = Color::BLACK;
+                RotateRight(parent(node));
+                node = root;
+            }
         }
     }
 }
@@ -330,7 +410,7 @@ void RBTree::DeleteCase1(NodePtr node) {
 }
 
 void RBTree::DeleteCase2(NodePtr node) {
-    NodePtr s = Sibling(node);
+    NodePtr s = brother(node);
 
     if (s->color == Color::RED) {
         node->parent->color = Color::RED;
@@ -344,7 +424,7 @@ void RBTree::DeleteCase2(NodePtr node) {
 }
 
 void RBTree::DeleteCase3(NodePtr node) {
-    NodePtr s = Sibling(node);
+    NodePtr s = brother(node);
 
     if ((node->parent->color == Color::BLACK) &&
         (s->color == Color::BLACK) &&
@@ -357,7 +437,7 @@ void RBTree::DeleteCase3(NodePtr node) {
 }
 
 void RBTree::DeleteCase4(NodePtr node) {
-    NodePtr s = Sibling(node);
+    NodePtr s = brother(node);
 
     if ((node->parent->color == Color::RED) &&
         (s->color == Color::BLACK) &&
@@ -370,7 +450,7 @@ void RBTree::DeleteCase4(NodePtr node) {
 }
 
 void RBTree::DeleteCase5(NodePtr node) {
-    NodePtr s = Sibling(node);
+    NodePtr s = brother(node);
 
     if  (s->color == Color::BLACK) {
         if ((node == node->parent->left) &&
@@ -391,7 +471,7 @@ void RBTree::DeleteCase5(NodePtr node) {
 }
 
 void RBTree::DeleteCase6(NodePtr node) {
-    NodePtr s = Sibling(node);
+    NodePtr s = brother(node);
 
     s->color = node->parent->color;
     node->parent->color = Color::BLACK;

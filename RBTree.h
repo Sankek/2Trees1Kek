@@ -16,12 +16,21 @@ private:
     void Destroy(NodePtr node);
     void CopyHelper(NodePtr node_copy, NodePtr node);
     bool FindHelper(const Int_t& value, NodePtr start_node);
-    NodePtr Grandparent(NodePtr node);
-    NodePtr Uncle(NodePtr node);
-    NodePtr Sibling(NodePtr node);
+
+    NodePtr left(NodePtr n);
+    NodePtr right(NodePtr n);
+    bool is_red(NodePtr n);
+    bool is_black(NodePtr n);
+    Color color(NodePtr n);
+    NodePtr parent(NodePtr n);
+    NodePtr grandparent(NodePtr n);
+    NodePtr brother(NodePtr n);
+    NodePtr uncle(NodePtr n);
+    NodePtr leftmost(NodePtr n);
+    NodePtr rightmost(NodePtr n);
+
     void RotateLeft(NodePtr node);
     void RotateRight(NodePtr node);
-    NodePtr Minimum(NodePtr start_node);
     void PrintHelper(NodePtr start_node, std::string indent, bool last);
 
     void InsertHelper(const Int_t& value);
@@ -31,7 +40,8 @@ private:
     void InsertCase4(NodePtr node);
     void InsertCase5(NodePtr node);
 
-    void DeleteHelper(const Int_t& value, NodePtr start_node);
+    void DeleteHelper(const Int_t& value, NodePtr node);
+    void DeleteFix(NodePtr node);
     void DeleteCase1(NodePtr node);
     void DeleteCase2(NodePtr node);
     void DeleteCase3(NodePtr node);
@@ -54,7 +64,6 @@ public:
     void Delete(const Int_t& value) override{ DeleteHelper(value, root); };
 
     void PrettyPrint();
-    RBNode* GetRoot(){ return root; };
 };
 
 

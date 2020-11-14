@@ -88,9 +88,7 @@ bool deleteNode (RBTree &tree, int k) {
     return {};
 }
 
-
-
-int main() {
+void Test(){
     RBTree tree;
     Timer time_it;
     std::fstream file;
@@ -121,5 +119,34 @@ int main() {
         file << k << ',' << average_find_time << ',' << average_insert_time << '\n';
     }
     file.close();
+}
+
+
+
+int main() {
+    RBTree tree;
+
+    tree.Insert(1);
+    tree.Insert(3);
+    tree.Insert(2);
+    tree.Insert(5);
+    tree.Insert(4);
+    tree.Insert(10);
+    tree.Insert(11);
+    tree.Insert(15);
+    tree.Insert(14);
+    tree.Delete(10);
+    tree.Delete(5);
+    tree.Delete(5);
+
+    std::cout << "Tree:\n";
+    tree.PrettyPrint();
+
+    tree.Delete(2);
+
+    std::cout << "Tree after Delete(2):\n";
+    tree.PrettyPrint();
+
+
     return 0;
 }
