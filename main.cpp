@@ -127,24 +127,31 @@ int main() {
     RBTree tree;
 
     tree.Insert(1);
-    tree.Insert(3);
-    tree.Insert(2);
     tree.Insert(5);
     tree.Insert(4);
+    tree.Insert(6);
+    tree.Insert(7);
+    tree.Insert(2);
+    tree.Insert(9);
     tree.Insert(10);
     tree.Insert(11);
-    tree.Insert(15);
-    tree.Insert(14);
-    tree.Delete(10);
-    tree.Delete(5);
-    tree.Delete(5);
+    tree.Insert(3);
+
 
     std::cout << "Tree:\n";
     tree.PrettyPrint();
 
-    tree.Delete(2);
 
-    std::cout << "Tree after Delete(2):\n";
+    std::cout << "Tree after Delete:\n";
+    tree.Delete(1);
+    tree.Delete(5);
+    tree.Delete(4);
+    tree.Delete(6);
+    tree.Delete(9);
+//    tree.Delete(3);
+    tree.PrettyPrint();
+    std::cout << "Tree after Delete 3:\n";
+    tree.Delete(3);
     tree.PrettyPrint();
 
 

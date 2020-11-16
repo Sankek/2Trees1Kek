@@ -140,7 +140,7 @@ void RBTree::RotateRight(NodePtr node) {
 
     pivot->parent = node->parent;
     if (node->parent != nullptr) {
-        if (node->parent->left==node)
+        if (node->parent->left == node)
             node->parent->left = pivot;
         else
             node->parent->right = pivot;
@@ -276,212 +276,176 @@ void RBTree::DeleteHelper(const Int_t &value, NodePtr node) {
         node = rm;
     }
 
+    // now node has 1 or 0 children
     NodePtr child = (node->left == nullptr) ? node->right : node->left;
     if (child != nullptr){
-        if (node == root){
-            root = child;
-        } else if (node->parent->left == node){
-            node->parent->left = child;
-        } else {
-            node->parent->right = child;
-        }
-        child->parent = node->parent;
-        if (is_black(node)){
-            DeleteFix(child);
-        }
+        // node is black and child is red with no children
+        node->data = child->data;
+        node->left = node->right = nullptr;
+        delete child;
+        return;
     } else {
         if (node == root){
             root = nullptr;
+            delete node;
+            return;
         }
         if (is_black(node)){
             DeleteFix(node);
+
+            root = node;
+            while(root->parent != nullptr){
+                root = root->parent;
+            }
         }
+
         if (node->parent->left == node){
             node->parent->left = nullptr;
         } else {
             node->parent->right = nullptr;
         }
+        delete node;
+        return;
     }
-
-    delete node;
-
-//    if ((node->left == nullptr) && (node->right == nullptr)){
-//        if (node->parent){
-//            if (node->parent->left == node){
-//                node->parent->left = nullptr;
-//            } else {
-//                node->parent->right = nullptr;
-//            }
-//            if (node->color == Color::BLACK){
-//                DeleteCase1(node);
-//            }
-//        } else {
-//            delete node;
-//            root = nullptr;
-//        }
-//    } else if (node->right == nullptr){
-//        NodePtr del_node = node->left;
-//        node->data = del_node->data;
-//        node->right = del_node->right;
-//        node->left = del_node->left;
-//        delete del_node;
-//    } else if (node->left == nullptr){
-//        NodePtr del_node = node->right;
-//        node->data = del_node->data;
-//        node->right = del_node->right;
-//        node->left = del_node->left;
-//        delete del_node;
-//    } else {
-//        NodePtr r_min = leftmost(node->right);
-//        node->data = r_min->data;
-//        if (r_min->right) {
-//            if (r_min->parent->left == r_min) {
-//                r_min->parent->left = r_min->right;
-//            } else {
-//                r_min->parent->right = r_min->right;
-//            }
-//            r_min->right->parent = r_min->parent;
-//        }
-//
-//        DeleteCase1(r_min);
-//        delete r_min;
-//    }
-
 }
 
 void RBTree::DeleteFix(NodePtr node){
-    while (node != root && is_black(node)) {
-        if (node == left(parent(node))) {
-            NodePtr bro = brother(node);
-            if (is_red(bro)) {
-                bro->color = Color::BLACK;
-                parent(node)->color = Color::RED;
-                RotateLeft(parent(node));
-                bro = brother(node);
-            }
-            if (is_black(left(bro)) && is_black(right(bro))) {
-                bro->color = Color::RED;
-                node = parent(node);
-            } else {
-                if (is_black(right(bro))) {
-                    left(bro)->color = Color::BLACK;
-                    bro->color = Color::RED;
-                    RotateRight(bro);
-                    bro = brother(node);
-                }
-                bro->color = color(parent(node));
-                parent(node)->color = Color::BLACK;
-                right(bro)->color = Color::BLACK;
-                RotateLeft(parent(node));
-                node = root;
-            }
+    // on the first iteration
+    // node is black with no children that will be deleted
+    // parent is not null
+
+    bool node_is_right_child = (node->parent->right == node);
+    NodePtr bro = brother(node);
+    if (is_red(node->parent)){
+        // bro is black
+
+        if (is_black(bro->left) && is_black(bro->right)){
+            node->parent->color = Color::BLACK;
+            bro->color = Color::RED;
+            return;
         } else {
-            NodePtr bro = brother(node);
-            if (is_red(bro)) {
-                bro->color = Color::BLACK;
-                parent(node)->color = Color::RED;
-                RotateRight(parent(node));
-                bro = brother(node);
-            }
-            if (is_black(left(bro)) && is_black(right(bro))) {
+            if (node_is_right_child && is_red(bro->left)){
+                XX2:
+                bro->left->color = Color::BLACK;
                 bro->color = Color::RED;
-                node = parent(node);
-            } else {
-                if (is_black(left(bro))) {
-                    right(bro)->color = Color::BLACK;
-                    bro->color = Color::RED;
-                    RotateLeft(bro);
-                    bro = brother(node);
+                node->parent->color = Color::BLACK;
+                RotateRight(node->parent);
+                return;
+            }
+
+            if (!node_is_right_child && is_red(bro->right)){ // inverse of previous
+                XX2_inv:
+                bro->right->color = Color::BLACK;
+                bro->color = Color::RED;
+                node->parent->color = Color::BLACK;
+                RotateLeft(node->parent);
+                return;
+            }
+
+            if (node_is_right_child && is_black(bro->left)){
+                XX3:
+                bro->right->color = Color::BLACK;
+                bro->color = Color::RED;
+                RotateLeft(bro);
+                bro = brother(node);
+                goto XX2;
+            }
+
+            if (!node_is_right_child && is_black(bro->right)){ // inverse of previous
+                XX3_inv:
+                bro->left->color = Color::BLACK;
+                bro->color = Color::RED;
+                RotateRight(bro);
+                bro = brother(node);
+                goto XX2_inv;
+            }
+        }
+
+
+    } else {  // parent is black
+        if (is_red(bro)){
+            if (node_is_right_child){
+                if (is_black(bro->right->left) && is_black(bro->right->right)){
+                    bro->color = Color::BLACK;
+                    bro->right->color = Color::RED;
+                    RotateRight(node->parent);
+                    return;
+                } else {
+                    if (is_red(bro->right->left)){
+                        bro->right->left->color = Color::BLACK;
+                        RotateLeft(bro);
+                        RotateRight(node->parent);
+                        return;
+                    } else { // bro->right->left is black and bro->right->right is red
+                        bro->color = Color::BLACK;
+                        node->parent->color = Color::RED;
+                        RotateRight(node->parent);
+                        goto XX3;
+                    }
                 }
-                bro->color = color(parent(node));
-                parent(node)->color = Color::BLACK;
-                right(bro)->color = Color::BLACK;
-                RotateRight(parent(node));
-                node = root;
+            } else { // inverse of previous statements
+                if (is_black(bro->left->left) && is_black(bro->left->right)){
+                    bro->color = Color::BLACK;
+                    bro->left->color = Color::RED;
+                    RotateLeft(node->parent);
+                    return;
+                } else {
+                    if (is_red(bro->left->right)){
+                        bro->left->right->color = Color::BLACK;
+                        RotateRight(bro);
+                        RotateLeft(node->parent);
+                        return;
+                    } else { // bro->left->right is black and bro->left->left is red
+                        bro->color = Color::BLACK;
+                        node->parent->color = Color::RED;
+                        RotateLeft(node->parent);
+                        goto XX3_inv;
+                    }
+                }
+            }
+        } else { // parent and bro are black
+            if (is_black(bro->left) && is_black(bro->right)){
+                XX6:
+                bro->color = Color::RED;
+                if (node->parent != root){
+                    DeleteFix(node->parent);
+                } else {
+                    return;
+                }
+            } else {
+                if (node_is_right_child && is_red(bro->right)){
+                    XX5:
+                    bro->right->color = Color::BLACK;
+                    RotateLeft(bro);
+                    RotateRight(node->parent);
+                    return;
+                }
+                if (!node_is_right_child && is_red(bro->left)){ // inverse of previous
+                    XX5_inv:
+                    bro->left->color = Color::BLACK;
+                    RotateRight(bro);
+                    RotateLeft(node->parent);
+                    return;
+                }
+
+                if (node_is_right_child && is_black(bro->right)){
+                    bro->left->color = Color::BLACK;
+                    RotateRight(node->parent);
+                    // Can be erased:
+                    node = bro->left;
+                    bro = brother(node);
+                    return;
+                }
+                if (!node_is_right_child && is_black(bro->left)){ // inverse of previous
+                    bro->right->color = Color::BLACK;
+                    RotateLeft(node->parent);
+                    // Can be erased:
+                    node = bro->left;
+                    bro = brother(node);
+                    return;
+                }
+
             }
         }
     }
 }
-
-void RBTree::DeleteCase1(NodePtr node) {
-    if (node->parent != nullptr){
-        DeleteCase2(node);
-    }
-}
-
-void RBTree::DeleteCase2(NodePtr node) {
-    NodePtr s = brother(node);
-
-    if (s->color == Color::RED) {
-        node->parent->color = Color::RED;
-        s->color = Color::BLACK;
-        if (node == node->parent->left)
-            RotateLeft(node->parent);
-        else
-            RotateRight(node->parent);
-    }
-    DeleteCase3(node);
-}
-
-void RBTree::DeleteCase3(NodePtr node) {
-    NodePtr s = brother(node);
-
-    if ((node->parent->color == Color::BLACK) &&
-        (s->color == Color::BLACK) &&
-        (s->left->color == Color::BLACK) &&
-        (s->right->color == Color::BLACK)) {
-        s->color = Color::RED;
-        DeleteCase1(node->parent);
-    } else
-        DeleteCase4(node);
-}
-
-void RBTree::DeleteCase4(NodePtr node) {
-    NodePtr s = brother(node);
-
-    if ((node->parent->color == Color::RED) &&
-        (s->color == Color::BLACK) &&
-        (s->left->color == Color::BLACK) &&
-        (s->right->color == Color::BLACK)) {
-        s->color = Color::RED;
-        node->parent->color = Color::BLACK;
-    } else
-        DeleteCase5(node);
-}
-
-void RBTree::DeleteCase5(NodePtr node) {
-    NodePtr s = brother(node);
-
-    if  (s->color == Color::BLACK) {
-        if ((node == node->parent->left) &&
-            (s->right->color == Color::BLACK) &&
-            (s->left->color == Color::RED)) {
-            s->color = Color::RED;
-            s->left->color = Color::BLACK;
-            RotateRight(s);
-        } else if ((node == node->parent->right) &&
-                   (s->left->color == Color::BLACK) &&
-                   (s->right->color == Color::RED)) {
-            s->color = Color::RED;
-            s->right->color = Color::BLACK;
-            RotateLeft(s);
-        }
-    }
-    DeleteCase6(node);
-}
-
-void RBTree::DeleteCase6(NodePtr node) {
-    NodePtr s = brother(node);
-
-    s->color = node->parent->color;
-    node->parent->color = Color::BLACK;
-
-    if (node == node->parent->left) {
-        s->right->color = Color::BLACK;
-        RotateLeft(node->parent);
-    } else {
-        s->left->color = Color::BLACK;
-        RotateRight(node->parent);
-    }
-}
-

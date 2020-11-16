@@ -42,14 +42,6 @@ private:
 
     void DeleteHelper(const Int_t& value, NodePtr node);
     void DeleteFix(NodePtr node);
-    void DeleteCase1(NodePtr node);
-    void DeleteCase2(NodePtr node);
-    void DeleteCase3(NodePtr node);
-    void DeleteCase4(NodePtr node);
-    void DeleteCase5(NodePtr node);
-    void DeleteCase6(NodePtr node);
-
-
 public:
     using Int_t = int_fast32_t;
     RBTree() = default;
