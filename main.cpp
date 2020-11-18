@@ -28,15 +28,15 @@ public:
 //    return static_cast<int>(rand() * fraction * (max - min + 1) + min);
 //}
 
-template <class T>
-double time_1000_iterations(RBTree &tree, uint64_t max, T func, bool copy=false) {
+
+double time_1000_iterations(RBTree &tree, int64_t max, bool (*func) (RBTree&, int), bool copy=false) {
     const int num_executions = 999;
     Timer time_it;
     RBTree temp_tree;
     bool out;
     uint64_t inp_num;
     double time, average_time = 0;
-    int first_input;
+    int64_t first_input;
     bool enough_size = false;
     if (max >= num_executions - 2) {
         first_input = max / 2 - (num_executions / 2) + 2;
@@ -57,6 +57,7 @@ double time_1000_iterations(RBTree &tree, uint64_t max, T func, bool copy=false)
 //            temp_tree.prettyPrint();
             out = func(temp_tree, inp_num);
             if (enough_size) {inp_num ++;}
+            else if (i % (num_executions/max + 1) == 0) {inp_num ++;}
 //            temp_tree.prettyPrint();
         }
         time = time_it.elapsed();
@@ -112,11 +113,11 @@ void Test(){
         std::cout << "Calculating insert_time..." << '\n';
         average_insert_time = time_1000_iterations(tree, k-1, insertNode);
 //        tree.PrettyPrint();
-//        std::cout << "Calculating delete_time..." << '\n';
-//        average_delete_time = time_1000_iterations(tree, k-1, deleteNode);
+        std::cout << "Calculating delete_time..." << '\n';
+        average_delete_time = time_1000_iterations(tree, k-1, deleteNode, true);
 
-//        file << k << ',' << average_find_time << ',' << average_insert_time << ',' << average_delete_time << '\n';
-        file << k << ',' << average_find_time << ',' << average_insert_time << '\n';
+        file << k << ',' << average_find_time << ',' << average_insert_time << ',' << average_delete_time << '\n';
+//        file << k << ',' << average_find_time << ',' << average_insert_time << '\n';
     }
     file.close();
 }
@@ -124,36 +125,36 @@ void Test(){
 
 
 int main() {
-    RBTree tree;
-
-    tree.Insert(1);
-    tree.Insert(5);
-    tree.Insert(4);
-    tree.Insert(6);
-    tree.Insert(7);
-    tree.Insert(2);
-    tree.Insert(9);
-    tree.Insert(10);
-    tree.Insert(11);
-    tree.Insert(3);
-
-
-    std::cout << "Tree:\n";
-    tree.PrettyPrint();
-
-
-    std::cout << "Tree after Delete:\n";
-    tree.Delete(1);
-    tree.Delete(5);
-    tree.Delete(4);
-    tree.Delete(6);
-    tree.Delete(9);
+//    RBTree tree;
+//
+//    tree.Insert(1);
+//    tree.Insert(5);
+//    tree.Insert(4);
+//    tree.Insert(6);
+//    tree.Insert(7);
+//    tree.Insert(2);
+//    tree.Insert(9);
+//    tree.Insert(10);
+//    tree.Insert(11);
+//    tree.Insert(3);
+//
+//
+//    std::cout << "Tree:\n";
+//    tree.PrettyPrint();
+//
+//
+//    std::cout << "Tree after Delete:\n";
+//    tree.Delete(1);
+//    tree.Delete(5);
+//    tree.Delete(4);
+//    tree.Delete(6);
+//    tree.Delete(9);
+////    tree.Delete(3);
+//    tree.PrettyPrint();
+//    std::cout << "Tree after Delete 3:\n";
 //    tree.Delete(3);
-    tree.PrettyPrint();
-    std::cout << "Tree after Delete 3:\n";
-    tree.Delete(3);
-    tree.PrettyPrint();
-
+//    tree.PrettyPrint();
+    Test();
 
     return 0;
 }
