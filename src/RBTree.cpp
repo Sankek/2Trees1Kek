@@ -117,6 +117,8 @@ NodePtr RBTree::rightmost(NodePtr n) { return (right(n) == nullptr) ? n : rightm
 
 
 void RBTree::RotateLeft(NodePtr node) {
+    ++rotations_count;
+
     NodePtr pivot = node->right;
 
     pivot->parent = node->parent;
@@ -136,6 +138,8 @@ void RBTree::RotateLeft(NodePtr node) {
 }
 
 void RBTree::RotateRight(NodePtr node) {
+    ++rotations_count;
+
     NodePtr pivot = node->left;
 
     pivot->parent = node->parent;

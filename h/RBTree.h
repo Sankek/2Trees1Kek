@@ -12,6 +12,7 @@ class RBTree : public ITree {
 private:
     using NodePtr = RBNode*;
     NodePtr root{};
+    Int_t rotations_count{};
 
     void Destroy(NodePtr node);
     void CopyHelper(NodePtr node_copy, NodePtr node);
@@ -55,6 +56,8 @@ public:
     void Insert(const Int_t& value) override{ InsertHelper(value); };
     void Delete(const Int_t& value) override{ DeleteHelper(value, root); };
 
+    void ResetRotationsCount() { rotations_count = 0; };
+    Int_t GetRotationsCount(){ return rotations_count; };
     void PrettyPrint();
 };
 

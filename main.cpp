@@ -132,6 +132,7 @@ void TestTime(bool make_graphs = true){
 void TestRBTree(){
     RBTree tree;
 
+    std::cout << "Tree:\n";
     tree.Insert(1);
     tree.Insert(5);
     tree.Insert(4);
@@ -142,23 +143,24 @@ void TestRBTree(){
     tree.Insert(10);
     tree.Insert(11);
     tree.Insert(3);
-
-
-    std::cout << "Tree:\n";
     tree.PrettyPrint();
+    std::cout << "Rotations while insert: " << tree.GetRotationsCount() << '\n';
 
-
-    std::cout << "Tree after Delete:\n";
+    std::cout << "Tree after Deletions:\n";
+    tree.ResetRotationsCount();
     tree.Delete(1);
     tree.Delete(5);
     tree.Delete(4);
     tree.Delete(6);
     tree.Delete(9);
-//    tree.Delete(3);
     tree.PrettyPrint();
-    std::cout << "Tree after Delete 3:\n";
+    std::cout << "Rotations: " << tree.GetRotationsCount() << '\n';
+
+    std::cout << "Tree after Delete(3):\n";
+    tree.ResetRotationsCount();
     tree.Delete(3);
     tree.PrettyPrint();
+    std::cout << "Rotations: " << tree.GetRotationsCount() << '\n';
 }
 
 
