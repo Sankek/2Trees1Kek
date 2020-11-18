@@ -1,8 +1,11 @@
 #include <iostream>
 #include <fstream>
 #include <functional>
-#include "RBTree.h"
 #include <chrono>
+#include <cstdlib>
+
+#include "RBTree.h"
+
 
 class Timer
 {
@@ -89,7 +92,7 @@ bool deleteNode (RBTree &tree, int k) {
     return {};
 }
 
-void TestTime(){
+void TestTime(bool make_graphs = true){
     RBTree tree;
     Timer time_it;
     std::fstream file;
@@ -120,6 +123,10 @@ void TestTime(){
 //        file << k << ',' << average_find_time << ',' << average_insert_time << '\n';
     }
     file.close();
+
+    if (make_graphs){
+        system("graph_maker.py");
+    }
 }
 
 void TestRBTree(){
@@ -158,7 +165,7 @@ void TestRBTree(){
 
 int main() {
 //    TestRBTree();
-    TestTime();
+    TestTime(true);
 
     return 0;
 }
