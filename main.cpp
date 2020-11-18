@@ -164,8 +164,8 @@ void TestRBTree(){
 
 
 int main() {
-//    TestRBTree();
-    TestTime(true);
+    TestRBTree();
+//    TestTime(true);
 
     return 0;
 }

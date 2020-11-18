@@ -316,6 +316,7 @@ void RBTree::DeleteFix(NodePtr node){
 
     bool node_is_right_child = (node->parent->right == node);
     NodePtr bro = brother(node);
+
     if (is_red(node->parent)){
         // bro is black
 
@@ -324,8 +325,23 @@ void RBTree::DeleteFix(NodePtr node){
             bro->color = Color::RED;
             return;
         } else {
+            if (node_is_right_child && is_black(bro->left)){
+                bro->right->color = Color::BLACK;
+                bro->color = Color::RED;
+                RotateLeft(bro);
+                bro = brother(node);
+                // now is_red(bro->left) is true
+            }
+
+            if (!node_is_right_child && is_black(bro->right)){ // inverse of previous
+                bro->left->color = Color::BLACK;
+                bro->color = Color::RED;
+                RotateRight(bro);
+                bro = brother(node);
+                // now is_red(bro->right) is true
+            }
+
             if (node_is_right_child && is_red(bro->left)){
-                XX2:
                 bro->left->color = Color::BLACK;
                 bro->color = Color::RED;
                 node->parent->color = Color::BLACK;
@@ -334,7 +350,6 @@ void RBTree::DeleteFix(NodePtr node){
             }
 
             if (!node_is_right_child && is_red(bro->right)){ // inverse of previous
-                XX2_inv:
                 bro->right->color = Color::BLACK;
                 bro->color = Color::RED;
                 node->parent->color = Color::BLACK;
@@ -342,23 +357,7 @@ void RBTree::DeleteFix(NodePtr node){
                 return;
             }
 
-            if (node_is_right_child && is_black(bro->left)){
-                XX3:
-                bro->right->color = Color::BLACK;
-                bro->color = Color::RED;
-                RotateLeft(bro);
-                bro = brother(node);
-                goto XX2;
-            }
 
-            if (!node_is_right_child && is_black(bro->right)){ // inverse of previous
-                XX3_inv:
-                bro->left->color = Color::BLACK;
-                bro->color = Color::RED;
-                RotateRight(bro);
-                bro = brother(node);
-                goto XX2_inv;
-            }
         }
 
 
@@ -380,7 +379,11 @@ void RBTree::DeleteFix(NodePtr node){
                         bro->color = Color::BLACK;
                         node->parent->color = Color::RED;
                         RotateRight(node->parent);
-                        goto XX3;
+                        // now:
+                        // is_red(node->parent) is true
+                        // is_black(bro->left) is true
+                        // is_red(bro->right) is true
+                        DeleteFix(node);
                     }
                 }
             } else { // inverse of previous statements
@@ -399,13 +402,16 @@ void RBTree::DeleteFix(NodePtr node){
                         bro->color = Color::BLACK;
                         node->parent->color = Color::RED;
                         RotateLeft(node->parent);
-                        goto XX3_inv;
+                        // now:
+                        // is_red(node->parent) is true
+                        // is_black(bro->right) is true
+                        // is_red(bro->left) is true
+                        DeleteFix(node);
                     }
                 }
             }
         } else { // parent and bro are black
             if (is_black(bro->left) && is_black(bro->right)){
-                XX6:
                 bro->color = Color::RED;
                 if (node->parent != root){
                     DeleteFix(node->parent);
@@ -414,14 +420,12 @@ void RBTree::DeleteFix(NodePtr node){
                 }
             } else {
                 if (node_is_right_child && is_red(bro->right)){
-                    XX5:
                     bro->right->color = Color::BLACK;
                     RotateLeft(bro);
                     RotateRight(node->parent);
                     return;
                 }
                 if (!node_is_right_child && is_red(bro->left)){ // inverse of previous
-                    XX5_inv:
                     bro->left->color = Color::BLACK;
                     RotateRight(bro);
                     RotateLeft(node->parent);
@@ -431,20 +435,13 @@ void RBTree::DeleteFix(NodePtr node){
                 if (node_is_right_child && is_black(bro->right)){
                     bro->left->color = Color::BLACK;
                     RotateRight(node->parent);
-                    // Can be erased:
-                    node = bro->left;
-                    bro = brother(node);
                     return;
                 }
                 if (!node_is_right_child && is_black(bro->left)){ // inverse of previous
                     bro->right->color = Color::BLACK;
                     RotateLeft(node->parent);
-                    // Can be erased:
-                    node = bro->left;
-                    bro = brother(node);
                     return;
                 }
-
             }
         }
     }
