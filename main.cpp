@@ -114,7 +114,7 @@ void TestTime(){
         average_insert_time = time_1000_iterations(tree, k-1, insertNode);
 //        tree.PrettyPrint();
         std::cout << "Calculating delete_time..." << '\n';
-        average_delete_time = time_1000_iterations(tree, k-1, deleteNode, true);
+        average_delete_time = time_1000_iterations(tree, k-1, deleteNode, false);
 
         file << k << ',' << average_find_time << ',' << average_insert_time << ',' << average_delete_time << '\n';
 //        file << k << ',' << average_find_time << ',' << average_insert_time << '\n';
@@ -157,8 +157,8 @@ void TestRBTree(){
 
 
 int main() {
-    TestRBTree();
-//    TestTime();
+//    TestRBTree();
+    TestTime();
 
     return 0;
 }
