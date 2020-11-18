@@ -16,7 +16,7 @@ private:
 
     void Destroy(NodePtr node);
     void CopyHelper(NodePtr node_copy, NodePtr node);
-    bool FindHelper(const Int_t& value, NodePtr start_node);
+    bool FindHelper(const Int_t& value, NodePtr node);
 
     NodePtr left(NodePtr n);
     NodePtr right(NodePtr n);

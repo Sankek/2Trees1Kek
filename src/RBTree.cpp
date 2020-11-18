@@ -86,21 +86,17 @@ void RBTree::Destroy(NodePtr node){
     delete node;
 }
 
-bool RBTree::FindHelper(const Int_t &value, NodePtr start_node) {
-    if (start_node != nullptr){
-        if(value == start_node->data){
-            return true;
-        }
-
-        // TODO: Rewrite as while-loop
-        if(value < start_node->data){
-            return FindHelper(value, start_node->left);
+bool RBTree::FindHelper(const Int_t &value, NodePtr node) {
+    while(node != nullptr) {
+        if (value < node->data) {
+            node = node->left;
+        } else if (value > node->data) {
+            node = node->right;
         } else {
-            return FindHelper(value, start_node->right);
+            break;
         }
-    } else {
-        return false;
     }
+    return node != nullptr;
 }
 
 NodePtr RBTree::left(NodePtr n){return        (n == nullptr) ? nullptr : n->left; }
