@@ -89,7 +89,7 @@ bool deleteNode (RBTree &tree, int k) {
     return {};
 }
 
-void Test(){
+void TestTime(){
     RBTree tree;
     Timer time_it;
     std::fstream file;
@@ -122,39 +122,43 @@ void Test(){
     file.close();
 }
 
+void TestRBTree(){
+    RBTree tree;
+
+    tree.Insert(1);
+    tree.Insert(5);
+    tree.Insert(4);
+    tree.Insert(6);
+    tree.Insert(7);
+    tree.Insert(2);
+    tree.Insert(9);
+    tree.Insert(10);
+    tree.Insert(11);
+    tree.Insert(3);
+
+
+    std::cout << "Tree:\n";
+    tree.PrettyPrint();
+
+
+    std::cout << "Tree after Delete:\n";
+    tree.Delete(1);
+    tree.Delete(5);
+    tree.Delete(4);
+    tree.Delete(6);
+    tree.Delete(9);
+//    tree.Delete(3);
+    tree.PrettyPrint();
+    std::cout << "Tree after Delete 3:\n";
+    tree.Delete(3);
+    tree.PrettyPrint();
+}
+
 
 
 int main() {
-//    RBTree tree;
-//
-//    tree.Insert(1);
-//    tree.Insert(5);
-//    tree.Insert(4);
-//    tree.Insert(6);
-//    tree.Insert(7);
-//    tree.Insert(2);
-//    tree.Insert(9);
-//    tree.Insert(10);
-//    tree.Insert(11);
-//    tree.Insert(3);
-//
-//
-//    std::cout << "Tree:\n";
-//    tree.PrettyPrint();
-//
-//
-//    std::cout << "Tree after Delete:\n";
-//    tree.Delete(1);
-//    tree.Delete(5);
-//    tree.Delete(4);
-//    tree.Delete(6);
-//    tree.Delete(9);
-////    tree.Delete(3);
-//    tree.PrettyPrint();
-//    std::cout << "Tree after Delete 3:\n";
-//    tree.Delete(3);
-//    tree.PrettyPrint();
-    Test();
+    TestRBTree();
+//    TestTime();
 
     return 0;
 }

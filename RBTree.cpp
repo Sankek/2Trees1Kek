@@ -311,8 +311,8 @@ void RBTree::DeleteHelper(const Int_t &value, NodePtr node) {
 
 void RBTree::DeleteFix(NodePtr node){
     // on the first iteration
-    // node is black with no children that will be deleted
-    // parent is not null
+    // node that will be deleted is black with no children
+    // and parent is not null
 
     bool node_is_right_child = (node->parent->right == node);
     NodePtr bro = brother(node);
