@@ -32,11 +32,11 @@ public:
 //    return static_cast<int>(rand() * fraction * (max - min + 1) + min);
 //}
 
-
-double time_1000_iterations(RBTree &tree, int64_t max, bool (*func) (RBTree&, int), bool copy=false) {
+template <class Tree>
+double time_1000_iterations(Tree &tree, int64_t max, bool (*func) (Tree&, int), bool copy=false) {
     const int num_executions = 999;
     Timer time_it;
-    RBTree temp_tree;
+    Tree temp_tree;
     bool out;
     uint64_t inp_num;
     double time, average_time = 0;
@@ -74,27 +74,30 @@ double time_1000_iterations(RBTree &tree, int64_t max, bool (*func) (RBTree&, in
     return average_time;
 }
 
-
-bool findNode (RBTree &tree, int k) {
+template <class Tree>
+bool findNode (Tree &tree, int k) {
     return tree.Find(k);
 }
 
-bool insertNode (RBTree &tree, int k) {
+template <class Tree>
+bool insertNode (Tree &tree, int k) {
 //    std::cout << "node for inserting: " << k << '\n';
 //    tree.prettyPrint();
     tree.Insert(k);
     return {};
 }
 
-bool deleteNode (RBTree &tree, int k) {
+template <class Tree>
+bool deleteNode (Tree &tree, int k) {
 //    std::cout << "node for deleting: " << k << '\n';
 //    tree.prettyPrint();
     tree.Delete(k);
     return {};
 }
 
+template <class Tree>
 void TestTime(bool make_graphs = true){
-    RBTree tree;
+    Tree tree;
     Timer time_it;
     std::fstream file;
     file.open("data.csv", std::fstream::out);
@@ -184,9 +187,9 @@ void TestAVLTree(){
 
 
 int main() {
-    TestRBTree();
-//    TestTime(true);
+//    TestRBTree();
 //    TestAVLTree();
+    TestTime<AVLTree>(true);
 
     return 0;
 }
