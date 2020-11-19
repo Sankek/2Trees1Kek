@@ -34,7 +34,7 @@ public:
 
 template <class Tree>
 double time_1000_iterations(Tree &tree, int64_t max, bool (*func) (Tree&, int), bool copy=false) {
-    const int num_executions = 999;
+    const int num_executions = 9999;
     Timer time_it;
     Tree temp_tree;
     bool out;
@@ -70,7 +70,7 @@ double time_1000_iterations(Tree &tree, int64_t max, bool (*func) (Tree&, int), 
 //        if (max >= 10*num_executions) {first_input += 9;}
     }
 
-    std::cout << '\n' << '\n' ;
+    std::cout << '\n';
     return average_time;
 }
 
@@ -107,21 +107,22 @@ void TestTime(bool make_graphs = true){
 
     uint64_t k = 1;
     for (int degree = 1; degree < 24; ++degree) {
-        std::cout << '\n' << "Degree = " << degree+1 << '\n';
+        std::cout << "Degree = " << degree+1 << '\n';
         for (int64_t i = k; i < k*2; ++i) {
             tree.Insert(i);
         }
 
         k *= 2;
 
-        std::cout << "Calculating find_time..." << '\n';
+        std::cout << "Calculating find_time:    ";
         average_find_time = time_1000_iterations(tree, k-1, findNode);
 //        tree.PrettyPrint();
-        std::cout << "Calculating insert_time..." << '\n';
+        std::cout << "Calculating insert_time:  ";
         average_insert_time = time_1000_iterations(tree, k-1, insertNode);
 //        tree.PrettyPrint();
-        std::cout << "Calculating delete_time..." << '\n';
+        std::cout << "Calculating delete_time:  ";
         average_delete_time = time_1000_iterations(tree, k-1, deleteNode, false);
+        std::cout << "____________________________________________________" << '\n';
 
         file << k << ',' << average_find_time << ',' << average_insert_time << ',' << average_delete_time << '\n';
 //        file << k << ',' << average_find_time << ',' << average_insert_time << '\n';
@@ -129,7 +130,7 @@ void TestTime(bool make_graphs = true){
     file.close();
 
     if (make_graphs){
-        system("graph_maker.py");
+        system("python graph_maker.py");
     }
 }
 
@@ -189,7 +190,7 @@ void TestAVLTree(){
 int main() {
 //    TestRBTree();
 //    TestAVLTree();
-    TestTime<AVLTree>(true);
+    TestTime<RBTree>(true);
 
     return 0;
 }
