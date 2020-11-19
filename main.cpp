@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <string>
 #include <functional>
 #include <chrono>
 #include <cstdlib>
@@ -34,7 +35,7 @@ public:
 
 template <class Tree>
 double time_1000_iterations(Tree &tree, int64_t max, bool (*func) (Tree&, int), bool copy=false) {
-    const int num_executions = 9999;
+    const int num_executions = 99;
     Timer time_it;
     Tree temp_tree;
     bool out;
@@ -96,7 +97,7 @@ bool deleteNode (Tree &tree, int k) {
 }
 
 template <class Tree>
-void TestTime(bool make_graphs = true){
+void TestTime(std::string path, bool make_graphs = true){
     Tree tree;
     Timer time_it;
     std::fstream file;
@@ -106,7 +107,7 @@ void TestTime(bool make_graphs = true){
     double average_find_time = 0, average_insert_time = 0, average_delete_time = 0;
 
     uint64_t k = 1;
-    for (int degree = 1; degree < 24; ++degree) {
+    for (int degree = 1; degree < 12; ++degree) {
         std::cout << "Degree = " << degree+1 << '\n';
         for (int64_t i = k; i < k*2; ++i) {
             tree.Insert(i);
@@ -130,7 +131,9 @@ void TestTime(bool make_graphs = true){
     file.close();
 
     if (make_graphs){
-        system("python graph_maker.py");
+        std::string str = "python graph_maker.py " + path;
+        const char* command = str.c_str();
+        system(command);
     }
 }
 
@@ -190,7 +193,8 @@ void TestAVLTree(){
 int main() {
 //    TestRBTree();
 //    TestAVLTree();
-    TestTime<RBTree>(true);
+    TestTime<RBTree>("/RBTree_timings", true);
+    TestTime<AVLTree>("/AVLTree_timings", true);
 
     return 0;
 }
