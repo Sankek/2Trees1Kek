@@ -5,6 +5,7 @@
 #include <cstdlib>
 
 #include "RBTree.h"
+#include "AVLTree.h"
 
 
 class Timer
@@ -163,11 +164,29 @@ void TestRBTree(){
     std::cout << "Rotations: " << tree.GetRotationsCount() << '\n';
 }
 
+void TestAVLTree(){
+    AVLTree tree;
+    tree.Insert(12);
+    tree.Insert(11);
+    tree.Insert( 9);
+    tree.Insert(35);
+    tree.Insert(7);
+    tree.Insert( 60);
+    tree.Insert(5);
+    tree.Insert(5);
+    //std::cout<<tree.Find(12);
+    //tree.Delete(12);
+    //std::cout<<tree.Find(12);
+    std::cout<<tree.get_rotations();
+    //tree.PreOrderTraversal();
+}
+
 
 
 int main() {
     TestRBTree();
 //    TestTime(true);
+//    TestAVLTree();
 
     return 0;
 }
