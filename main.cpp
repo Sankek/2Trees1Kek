@@ -2,73 +2,55 @@
 #include <fstream>
 #include <string>
 #include <functional>
-#include <chrono>
 #include <cstdlib>
 
 #include "RBTree.h"
 #include "AVLTree.h"
+#include "Timer.h"
 
 
-class Timer
+int GetRandomNumber(int min, int max)
 {
-private:
-    using clock_t = std::chrono::high_resolution_clock;
-    using second_t = std::chrono::duration<double, std::ratio<1> >;
-    std::chrono::time_point<clock_t> m_beg;
-
-public:
-    Timer() : m_beg(clock_t::now()) {}
-    void reset() {
-        m_beg = clock_t::now();
-    }
-
-    double elapsed() const {
-        return std::chrono::duration_cast<second_t>(clock_t::now() - m_beg).count();
-    }
-};
-
-//int getRandomNumber(int min, int max)
-//{
-//    static const double fraction = 1.0 / (static_cast<double>(RAND_MAX) + 1.0);
-//    return static_cast<int>(rand() * fraction * (max - min + 1) + min);
-//}
+    static const double fraction = 1.0 / (static_cast<double>(RAND_MAX) + 1.0);
+    return static_cast<int>(rand() * fraction * (max - min + 1) + min);
+}
 
 template <class Tree>
-double time_1000_iterations(Tree &tree, int64_t max, bool (*func) (Tree&, int), bool copy=false) {
-    const int num_executions = 99;
+double AverageTime(Tree &tree, int64_t max, bool (*func) (Tree&, int), bool copy= false) {
+    const int num_executions = 9999;
     Timer time_it;
     Tree temp_tree;
-    bool out;
-    uint64_t inp_num;
+    int64_t current_index;
     double time, average_time = 0;
-    int64_t first_input;
+    int64_t first_index;
     bool enough_size = false;
     if (max >= num_executions - 2) {
-        first_input = max / 2 - (num_executions / 2) + 2;
+        first_index = max / 2 - (num_executions / 2) + 2;
         enough_size = true;
     }
     else {
-        first_input = 1;
+        first_index = 1;
     }
 
     temp_tree = tree;
     for (int i = 0; i < 1000; ++i) {
         if (i % 100 == 0) { std::cout << '#'; }
-//        inp_num = getRandomNumber(1, max);
+//        current_index = GetRandomNumber(1, max);
         if (copy){ temp_tree = tree; }
-        inp_num = first_input;
+        current_index = first_index;
         time_it.reset();
         for (int j = 0; j < num_executions; ++j) {
 //            temp_tree.prettyPrint();
-            out = func(temp_tree, inp_num);
-            if (enough_size) {inp_num ++;}
-            else if (i % (num_executions/max + 1) == 0) {inp_num ++;}
+            func(temp_tree, current_index);
+            if (enough_size) {current_index ++;}
+//            else {current_index = GetRandomNumber(1, max);}
+//            else if (i % (num_executions/max + 1) == 0) { current_index += 1;}
 //            temp_tree.prettyPrint();
         }
         time = time_it.elapsed();
         average_time += (time - average_time) / (i + 1);
 
-//        if (max >= 10*num_executions) {first_input += 9;}
+//        if (max >= 10*num_executions) {first_index += 9;}
     }
 
     std::cout << '\n';
@@ -97,17 +79,18 @@ bool deleteNode (Tree &tree, int k) {
 }
 
 template <class Tree>
-void TestTime(std::string path, bool make_graphs = true){
+void TestTime(const std::string& path, bool make_graphs = true){
+    const int MAX_DEGREE = 20;
     Tree tree;
     Timer time_it;
     std::fstream file;
     file.open("data.csv", std::fstream::out);
     file << "N" << ',' << "elapsed_find_time" << ',' << "elapsed_insert_time" << ',' << "elapsed_delete_time" << '\n';
 
-    double average_find_time = 0, average_insert_time = 0, average_delete_time = 0;
+    double average_find_time, average_insert_time, average_delete_time;
 
     uint64_t k = 1;
-    for (int degree = 1; degree < 12; ++degree) {
+    for (int degree = 1; degree < MAX_DEGREE; ++degree) {
         std::cout << "Degree = " << degree+1 << '\n';
         for (int64_t i = k; i < k*2; ++i) {
             tree.Insert(i);
@@ -116,13 +99,13 @@ void TestTime(std::string path, bool make_graphs = true){
         k *= 2;
 
         std::cout << "Calculating find_time:    ";
-        average_find_time = time_1000_iterations(tree, k-1, findNode);
+        average_find_time = AverageTime(tree, k - 1, findNode);
 //        tree.PrettyPrint();
         std::cout << "Calculating insert_time:  ";
-        average_insert_time = time_1000_iterations(tree, k-1, insertNode);
+        average_insert_time = AverageTime(tree, k - 1, insertNode);
 //        tree.PrettyPrint();
         std::cout << "Calculating delete_time:  ";
-        average_delete_time = time_1000_iterations(tree, k-1, deleteNode, false);
+        average_delete_time = AverageTime(tree, k - 1, deleteNode, false);
         std::cout << "____________________________________________________" << '\n';
 
         file << k << ',' << average_find_time << ',' << average_insert_time << ',' << average_delete_time << '\n';
@@ -137,7 +120,7 @@ void TestTime(std::string path, bool make_graphs = true){
     }
 }
 
-void TestRBTree(){
+[[maybe_unused]] void TestRBTree(){
     RBTree tree;
 
     std::cout << "Tree:\n";
@@ -171,7 +154,7 @@ void TestRBTree(){
     std::cout << "Rotations: " << tree.GetRotationsCount() << '\n';
 }
 
-void TestAVLTree(){
+[[maybe_unused]] void TestAVLTree(){
     AVLTree tree;
     tree.Insert(12);
     tree.Insert(11);
@@ -193,7 +176,9 @@ void TestAVLTree(){
 int main() {
 //    TestRBTree();
 //    TestAVLTree();
+    std::cout << '\n' << "TESTING RBTree." << '\n';
     TestTime<RBTree>("/RBTree_timings", true);
+    std::cout << '\n' << "TESTING AVLTree."  << '\n';
     TestTime<AVLTree>("/AVLTree_timings", true);
 
     return 0;

@@ -197,18 +197,28 @@ AVLNode* AVLTree::DeleteHelper(AVLNode* p, int k) // удаление ключа
     {
         AVLNode* q = p->left;
         AVLNode* r = p->right;
-        delete p;
-        if( !r ) {
-            if (p==root) {
+        if (p==root) {
+            if( !r ) {
+                delete p;
                 return root = q;
-            } else {
+            }
+            delete p;
+            AVLNode* min = FindMin(r);
+            min->right = RemoveMin(r);
+            min->left = q;
+            root = min;
+            return Balance(root);
+        } else {
+            if( !r ) {
+                delete p;
                 return q;
             }
+            delete p;
+            AVLNode* min = FindMin(r);
+            min->right = RemoveMin(r);
+            min->left = q;
+            return Balance(min);
         }
-        AVLNode* min = FindMin(r);
-        min->right = RemoveMin(r);
-        min->left = q;
-        return Balance(min);
     }
     return Balance(p);
 }
