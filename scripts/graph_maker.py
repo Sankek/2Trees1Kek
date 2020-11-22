@@ -20,10 +20,10 @@ if len(sys.argv) > 1:
     path += sys.argv[1]
 
 
-pd.read_csv('data.csv')
+pd.read_csv('../data.csv')
 Path(path).mkdir(parents=True, exist_ok=True)
 
-y = pd.read_csv('data.csv').elapsed_find_time
+y = pd.read_csv('../data.csv').elapsed_find_time
 x = [10 ** i for i in range(len(y))]
 fig, axs = plt.subplots(1, 2, figsize=(15, 4))
 fig.suptitle(f'Find time {sys.argv[1][1:]}')
@@ -31,7 +31,7 @@ axs[0].plot(y)
 axs[1].plot(x, y)
 plt.savefig(path + '/find_time.pdf')
 
-y = pd.read_csv('data.csv').elapsed_insert_time
+y = pd.read_csv('../data.csv').elapsed_insert_time
 x = [10 ** i for i in range(len(y))]
 fig, axs = plt.subplots(1, 2, figsize=(15, 4))
 fig.suptitle(f'Insert time {sys.argv[1][1:]}')
@@ -39,7 +39,7 @@ axs[0].plot(y)
 axs[1].plot(x, y)
 plt.savefig(f'{path}/insert_time.pdf')
 
-y = pd.read_csv('data.csv').elapsed_delete_time
+y = pd.read_csv('../data.csv').elapsed_delete_time
 x = [10 ** i for i in range(len(y))]
 fig, axs = plt.subplots(1, 2, figsize=(15, 4))
 fig.suptitle(f'Delete time {sys.argv[1][1:]}')
