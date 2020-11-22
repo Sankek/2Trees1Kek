@@ -17,7 +17,7 @@ int GetRandomNumber(int min, int max)
 
 template <class Tree>
 double AverageTime(Tree &tree, int64_t max, bool (*func) (Tree&, int), bool copy= false) {
-    const int num_executions = 9999;
+    const int num_executions = 99;
     Timer time_it;
     Tree temp_tree;
     int64_t current_index;
@@ -79,12 +79,12 @@ bool deleteNode (Tree &tree, int k) {
 }
 
 template <class Tree>
-void TestTime(const std::string& path, bool make_graphs = true){
+void TestTime(const std::string& name, bool make_graphs = true){
     const int MAX_DEGREE = 20;
     Tree tree;
     Timer time_it;
     std::fstream file;
-    file.open("data.csv", std::fstream::out);
+    file.open("data/" + name + ".csv", std::fstream::out);
     file << "N" << ',' << "elapsed_find_time" << ',' << "elapsed_insert_time" << ',' << "elapsed_delete_time" << '\n';
 
     double average_find_time, average_insert_time, average_delete_time;
@@ -114,7 +114,7 @@ void TestTime(const std::string& path, bool make_graphs = true){
     file.close();
 
     if (make_graphs){
-        std::string str = "python graph_maker.py " + path;
+        std::string str = "python scripts/graph_maker.py " + name;
         const char* command = str.c_str();
         system(command);
     }
@@ -177,9 +177,9 @@ int main() {
 //    TestRBTree();
 //    TestAVLTree();
     std::cout << '\n' << "TESTING RBTree." << '\n';
-    TestTime<RBTree>("/RBTree_timings", true);
+    TestTime<RBTree>("RBTree_timings", true);
     std::cout << '\n' << "TESTING AVLTree."  << '\n';
-    TestTime<AVLTree>("/AVLTree_timings", true);
+    TestTime<AVLTree>("AVLTree_timings", true);
 
     return 0;
 }
