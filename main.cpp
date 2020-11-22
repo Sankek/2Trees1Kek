@@ -9,12 +9,6 @@
 #include "Timer.h"
 
 
-int GetRandomNumber(int min, int max)
-{
-    static const double fraction = 1.0 / (static_cast<double>(RAND_MAX) + 1.0);
-    return static_cast<int>(rand() * fraction * (max - min + 1) + min);
-}
-
 template <class Tree>
 double AverageTime(Tree &tree, int64_t max, bool (*func) (Tree&, int), bool copy= false) {
     const int num_executions = 9999;
@@ -29,28 +23,21 @@ double AverageTime(Tree &tree, int64_t max, bool (*func) (Tree&, int), bool copy
         enough_size = true;
     }
     else {
-        first_index = 1;
+        first_index = max-1;
     }
 
     temp_tree = tree;
     for (int i = 0; i < 1000; ++i) {
         if (i % 100 == 0) { std::cout << '#'; }
-//        current_index = GetRandomNumber(1, max);
         if (copy){ temp_tree = tree; }
         current_index = first_index;
         time_it.reset();
         for (int j = 0; j < num_executions; ++j) {
-//            temp_tree.prettyPrint();
             func(temp_tree, current_index);
             if (enough_size) {current_index ++;}
-//            else {current_index = GetRandomNumber(1, max);}
-//            else if (i % (num_executions/max + 1) == 0) { current_index += 1;}
-//            temp_tree.prettyPrint();
         }
         time = time_it.elapsed();
         average_time += (time - average_time) / (i + 1);
-
-//        if (max >= 10*num_executions) {first_index += 9;}
     }
 
     std::cout << '\n';
@@ -64,23 +51,19 @@ bool findNode (Tree &tree, int k) {
 
 template <class Tree>
 bool insertNode (Tree &tree, int k) {
-//    std::cout << "node for inserting: " << k << '\n';
-//    tree.prettyPrint();
     tree.Insert(k);
     return {};
 }
 
 template <class Tree>
 bool deleteNode (Tree &tree, int k) {
-//    std::cout << "node for deleting: " << k << '\n';
-//    tree.prettyPrint();
     tree.Delete(k);
     return {};
 }
 
 template <class Tree>
 void TestTime(const std::string& path, bool make_graphs = true){
-    const int MAX_DEGREE = 20;
+    const int MAX_DEGREE = 24;
     Tree tree;
     Timer time_it;
     std::fstream file;
@@ -100,16 +83,13 @@ void TestTime(const std::string& path, bool make_graphs = true){
 
         std::cout << "Calculating find_time:    ";
         average_find_time = AverageTime(tree, k - 1, findNode);
-//        tree.PrettyPrint();
         std::cout << "Calculating insert_time:  ";
         average_insert_time = AverageTime(tree, k - 1, insertNode);
-//        tree.PrettyPrint();
         std::cout << "Calculating delete_time:  ";
         average_delete_time = AverageTime(tree, k - 1, deleteNode, false);
         std::cout << "____________________________________________________" << '\n';
 
         file << k << ',' << average_find_time << ',' << average_insert_time << ',' << average_delete_time << '\n';
-//        file << k << ',' << average_find_time << ',' << average_insert_time << '\n';
     }
     file.close();
 
