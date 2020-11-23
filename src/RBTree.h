@@ -8,15 +8,31 @@
 #include "RBNode.h"
 
 
-class RBTree : public ITree {
+template <class T>
+class RBTree : public ITree<T> {
+public:
+    RBTree() = default;
+    ~RBTree() override{
+        Destroy(root);
+    }
+    RBTree(const RBTree &tree);
+    RBTree& operator=(const RBTree &tree);
+
+    bool Find(const T& value) override{ return FindHelper(value, root); };
+    void Insert(const T& value) override{ InsertHelper(value); };
+    void Delete(const T& value) override{ DeleteHelper(value, root); };
+
+    void ResetRotationsCount() { rotations_count = 0; };
+    T GetRotationsCount(){ return rotations_count; };
+    void PrettyPrint();
 private:
-    using NodePtr = RBNode*;
+    using NodePtr = RBNode<T>*;
     NodePtr root{};
-    Int_t rotations_count{};
+    T rotations_count{};
 
     void Destroy(NodePtr node);
     void CopyHelper(NodePtr node_copy, NodePtr node);
-    bool FindHelper(const Int_t& value, NodePtr node);
+    bool FindHelper(const T& value, NodePtr node);
 
     NodePtr left(NodePtr n);
     NodePtr right(NodePtr n);
@@ -34,31 +50,16 @@ private:
     void RotateRight(NodePtr node);
     void PrintHelper(NodePtr start_node, std::string indent, bool last);
 
-    void InsertHelper(const Int_t& value);
+    void InsertHelper(const T& value);
     void InsertCase1(NodePtr node);
     void InsertCase2(NodePtr node);
     void InsertCase3(NodePtr node);
     void InsertCase4(NodePtr node);
     void InsertCase5(NodePtr node);
 
-    void DeleteHelper(const Int_t& value, NodePtr node);
+    void DeleteHelper(const T& value, NodePtr node);
     void DeleteFix(NodePtr node);
-public:
-    using Int_t = int_fast32_t;
-    RBTree() = default;
-    ~RBTree() override{
-        Destroy(root);
-    }
-    RBTree(const RBTree &tree);
-    RBTree& operator=(const RBTree &tree);
 
-    bool Find(const Int_t& value) override{ return FindHelper(value, root); };
-    void Insert(const Int_t& value) override{ InsertHelper(value); };
-    void Delete(const Int_t& value) override{ DeleteHelper(value, root); };
-
-    void ResetRotationsCount() { rotations_count = 0; };
-    Int_t GetRotationsCount(){ return rotations_count; };
-    void PrettyPrint();
 };
 
 

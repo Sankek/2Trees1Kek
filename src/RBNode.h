@@ -8,8 +8,9 @@ enum class Color{
     RED
 };
 
+template <class T>
 struct RBNode{
-    int_fast32_t data{};
+    T data{};
     RBNode *parent{nullptr};
     RBNode *left{nullptr};
     RBNode *right{nullptr};

@@ -2,16 +2,15 @@
 
 #include "RBTree.h"
 
-
-using NodePtr = RBNode*;
-
-void RBTree::PrettyPrint() {
+template <class T>
+void RBTree<T>::PrettyPrint() {
     if (root) {
         PrintHelper(root, "", true);
     }
 }
 
-void RBTree::PrintHelper(NodePtr start_node, std::string indent, bool last){
+template <class T>
+void RBTree<T>::PrintHelper(NodePtr start_node, std::string indent, bool last){
     if (start_node != nullptr) {
         std::cout << indent;
         if (last) {
@@ -34,19 +33,20 @@ void RBTree::PrintHelper(NodePtr start_node, std::string indent, bool last){
     }
 }
 
-void RBTree::CopyHelper(NodePtr node_copy, NodePtr node) {
+template <class T>
+void RBTree<T>::CopyHelper(NodePtr node_copy, NodePtr node) {
     if (node != nullptr) {
         node_copy->data = node->data;
         node_copy->color = node->color;
 
         if (node->left != nullptr) {
-            NodePtr node_copy_left = new RBNode;
+            auto node_copy_left = new RBNode<T>;
             node_copy_left->parent = node_copy;
             node_copy->left = node_copy_left;
         }
 
         if (node->right != nullptr) {
-            NodePtr node_copy_right = new RBNode;
+            auto node_copy_right = new RBNode<T>;
             node_copy_right->parent = node_copy;
             node_copy->right = node_copy_right;
         }
@@ -56,25 +56,28 @@ void RBTree::CopyHelper(NodePtr node_copy, NodePtr node) {
     }
 }
 
-RBTree::RBTree(const RBTree &tree){
-    root = new RBNode;
+template <class T>
+RBTree<T>::RBTree(const RBTree<T> &tree){
+    root = new RBNode<T>;
     CopyHelper(root, tree.root);
-    }
+}
 
-RBTree& RBTree::operator=(const RBTree &tree){
+template <class T>
+RBTree<T>& RBTree<T>::operator=(const RBTree<T> &tree){
     // self-assignment guard
     if (this == &tree)
         return *this;
 
     // do the copy
     Destroy(root);
-    root = new RBNode;
+    root = new RBNode<T>;
     CopyHelper(root, tree.root);
 
     return *this;
 }
 
-void RBTree::Destroy(NodePtr node){
+template <class T>
+void RBTree<T>::Destroy(NodePtr node){
     if (node) {
         if (node->left) {
             Destroy(node->left);
@@ -86,7 +89,8 @@ void RBTree::Destroy(NodePtr node){
     delete node;
 }
 
-bool RBTree::FindHelper(const Int_t &value, NodePtr node) {
+template <class T>
+bool RBTree<T>::FindHelper(const T &value, NodePtr node) {
     while(node != nullptr) {
         if (value < node->data) {
             node = node->left;
@@ -99,20 +103,32 @@ bool RBTree::FindHelper(const Int_t &value, NodePtr node) {
     return node != nullptr;
 }
 
-NodePtr RBTree::left(NodePtr n){return        (n == nullptr) ? nullptr : n->left; }
-NodePtr RBTree::right(NodePtr n){return       (n == nullptr) ? nullptr : n->right; }
-Color RBTree::color(NodePtr n){return         (n == nullptr) ? Color::BLACK : Color::RED; }
-bool RBTree::is_red(NodePtr n){return         (n != nullptr) && (n->color == Color::RED); }
-bool RBTree::is_black(NodePtr n){return       (n == nullptr) || (n->color == Color::BLACK); }
-NodePtr RBTree::parent(NodePtr n){return      (n == nullptr) ? nullptr : n->parent; }
-NodePtr RBTree::grandparent(NodePtr n){return parent(parent(n)); }
-NodePtr RBTree::brother(NodePtr n){return     (n == left(parent(n))) ? right(parent(n)) : left(parent(n)); }
-NodePtr RBTree::uncle(NodePtr n){return       (parent(n)) == left(grandparent(n)) ? right(grandparent(n)) : left(grandparent(n)); }
-NodePtr RBTree::leftmost(NodePtr n) { return  (left(n) == nullptr) ? n : leftmost(left(n)); }
-NodePtr RBTree::rightmost(NodePtr n) { return (right(n) == nullptr) ? n : rightmost(right(n)); }
+template <class T>
+RBNode<T>* RBTree<T>::left(NodePtr n){return        (n == nullptr) ? nullptr : n->left; }
+template <class T>
+RBNode<T>* RBTree<T>::right(NodePtr n){return       (n == nullptr) ? nullptr : n->right; }
+template <class T>
+Color RBTree<T>::color(NodePtr n){return         (n == nullptr) ? Color::BLACK : Color::RED; }
+template <class T>
+bool RBTree<T>::is_red(NodePtr n){return         (n != nullptr) && (n->color == Color::RED); }
+template <class T>
+bool RBTree<T>::is_black(NodePtr n){return       (n == nullptr) || (n->color == Color::BLACK); }
+template <class T>
+RBNode<T>* RBTree<T>::parent(NodePtr n){return      (n == nullptr) ? nullptr : n->parent; }
+template <class T>
+RBNode<T>* RBTree<T>::grandparent(NodePtr n){return parent(parent(n)); }
+template <class T>
+RBNode<T>* RBTree<T>::brother(NodePtr n){return     (n == left(parent(n))) ? right(parent(n)) : left(parent(n)); }
+template <class T>
+RBNode<T>* RBTree<T>::uncle(NodePtr n){return       (parent(n)) == left(grandparent(n)) ? right(grandparent(n)) : left(grandparent(n)); }
+template <class T>
+RBNode<T>* RBTree<T>::leftmost(NodePtr n) { return  (left(n) == nullptr) ? n : leftmost(left(n)); }
+template <class T>
+RBNode<T>* RBTree<T>::rightmost(NodePtr n) { return (right(n) == nullptr) ? n : rightmost(right(n)); }
 
 
-void RBTree::RotateLeft(NodePtr node) {
+template <class T>
+void RBTree<T>::RotateLeft(NodePtr node) {
     ++rotations_count;
 
     NodePtr pivot = node->right;
@@ -133,7 +149,8 @@ void RBTree::RotateLeft(NodePtr node) {
     pivot->left = node;
 }
 
-void RBTree::RotateRight(NodePtr node) {
+template <class T>
+void RBTree<T>::RotateRight(NodePtr node) {
     ++rotations_count;
 
     NodePtr pivot = node->left;
@@ -155,7 +172,8 @@ void RBTree::RotateRight(NodePtr node) {
 }
 
 
-void RBTree::InsertHelper(const Int_t &value) {
+template <class T>
+void RBTree<T>::InsertHelper(const T &value) {
     NodePtr node_parent{};
     NodePtr x = root;
     while (x != nullptr) {
@@ -168,7 +186,7 @@ void RBTree::InsertHelper(const Int_t &value) {
             return;
         }
     }
-    NodePtr node = new RBNode;
+    auto node = new RBNode<T>;
     node->data = value;
     node->color = Color::RED;
 
@@ -189,7 +207,8 @@ void RBTree::InsertHelper(const Int_t &value) {
     }
 }
 
-void RBTree::InsertCase1(NodePtr node) {
+template <class T>
+void RBTree<T>::InsertCase1(NodePtr node) {
     if (node->parent == nullptr){
         node->color = Color::BLACK;
     } else {
@@ -197,7 +216,8 @@ void RBTree::InsertCase1(NodePtr node) {
     }
 }
 
-void RBTree::InsertCase2(NodePtr node) {
+template <class T>
+void RBTree<T>::InsertCase2(NodePtr node) {
     if (node->parent->color == Color::BLACK){
         return;
     } else {
@@ -205,7 +225,8 @@ void RBTree::InsertCase2(NodePtr node) {
     }
 }
 
-void RBTree::InsertCase3(NodePtr node) {
+template <class T>
+void RBTree<T>::InsertCase3(NodePtr node) {
     NodePtr u = uncle(node);
     NodePtr gparent{};
 
@@ -220,23 +241,25 @@ void RBTree::InsertCase3(NodePtr node) {
     }
 }
 
-void RBTree::InsertCase4(NodePtr node) {
+template <class T>
+void RBTree<T>::InsertCase4(NodePtr node) {
     NodePtr parent = node->parent;
     NodePtr gparent = grandparent(node);
 
     if ((node == parent->right) && (parent == gparent->left)) {
         RotateLeft(parent);
-        
+
         node = node->left;
     } else if ((node == parent->left) && (parent == gparent->right)) {
         RotateRight(parent);
-        
+
         node = node->right;
     }
     InsertCase5(node);
 }
 
-void RBTree::InsertCase5(NodePtr node) {
+template <class T>
+void RBTree<T>::InsertCase5(NodePtr node) {
     NodePtr parent = node->parent;
     NodePtr gparent = grandparent(node);
 
@@ -250,7 +273,8 @@ void RBTree::InsertCase5(NodePtr node) {
 }
 
 
-void RBTree::DeleteHelper(const Int_t &value, NodePtr node) {
+template <class T>
+void RBTree<T>::DeleteHelper(const T &value, NodePtr node) {
     while(node != nullptr) {
         if (value < node->data) {
             node = node->left;
@@ -309,7 +333,8 @@ void RBTree::DeleteHelper(const Int_t &value, NodePtr node) {
     }
 }
 
-void RBTree::DeleteFix(NodePtr node){
+template <class T>
+void RBTree<T>::DeleteFix(NodePtr node){
     // on the first iteration
     // node that will be deleted is black with no children
     // and parent is not null
@@ -446,3 +471,6 @@ void RBTree::DeleteFix(NodePtr node){
         }
     }
 }
+
+
+template class RBTree<int>;

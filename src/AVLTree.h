@@ -1,4 +1,3 @@
-
 #ifndef AVLTREE_H
 #define AVLTREE_H
 
@@ -6,24 +5,8 @@
 #include "AVLNode.h"
 
 
-
-class AVLTree : public ITree {
-private:
-    AVLNode* root{};
-    int32_t rotations = 0;
-
-    void Destroy(AVLNode* node);
-    void FixHeight(AVLNode* p);
-    bool FindHelper(AVLNode* p, int k);
-    AVLNode* RotateRight(AVLNode* p); // правый поворот вокруг p
-    AVLNode* RotateLeft(AVLNode* q); // левый поворот вокруг q
-    AVLNode* InsertHelper(AVLNode* p, int k); // вставка ключа k в дерево с корнем p
-    void CopyHelper(AVLNode* node_copy, AVLNode* node);
-    int32_t BFactor(AVLNode* p);
-    AVLNode* Balance(AVLNode* p); // балансировка узла p
-    AVLNode* FindMin(AVLNode* p); // поиск узла с минимальным ключом в дереве p
-    AVLNode* RemoveMin(AVLNode* p); // удаление узла с минимальным ключом из дерева p
-    AVLNode* DeleteHelper(AVLNode* p, int k); // удаление ключа k из дерева p
+template <class T>
+class AVLTree : public ITree<T> {
 public:
     AVLTree() = default;
     AVLTree(const AVLTree &tree);
@@ -32,14 +15,29 @@ public:
     int32_t get_rotations();
 
     void null_rotations();
-    unsigned char get_height(AVLNode* p);
+    unsigned char get_height(AVLNode<T>* p);
 
-    void Insert(const int& k) override; // вставка ключа k в дерево с корнем p
-    bool Find(const int& k) override;
-    void Delete(const int& k) override;
-    void PreOrderTraversalHelper(AVLNode* p);
+    void Insert(const T& k) override; // вставка ключа k в дерево с корнем p
+    bool Find(const T& k) override;
+    void Delete(const T& k) override;
+    void PreOrderTraversalHelper(AVLNode<T>* p);
     void PreOrderTraversal();
+private:
+    AVLNode<T>* root{};
+    int32_t rotations = 0;
+
+    void Destroy(AVLNode<T>* node);
+    void FixHeight(AVLNode<T>* p);
+    bool FindHelper(AVLNode<T>* p, const T& k);
+    AVLNode<T>* RotateRight(AVLNode<T>* p); // правый поворот вокруг p
+    AVLNode<T>* RotateLeft(AVLNode<T>* q); // левый поворот вокруг q
+    AVLNode<T>* InsertHelper(AVLNode<T>* p, const T& k); // вставка ключа k в дерево с корнем p
+    void CopyHelper(AVLNode<T>* node_copy, AVLNode<T>* node);
+    int32_t BFactor(AVLNode<T>* p);
+    AVLNode<T>* Balance(AVLNode<T>* p); // балансировка узла p
+    AVLNode<T>* FindMin(AVLNode<T>* p); // поиск узла с минимальным ключом в дереве p
+    AVLNode<T>* RemoveMin(AVLNode<T>* p); // удаление узла с минимальным ключом из дерева p
+    AVLNode<T>* DeleteHelper(AVLNode<T>* p, const T& k); // удаление ключа k из дерева p
 };
 
-
-#endif //UNTITLED20_AVLTREE_H
+#endif //AVLTREE_H

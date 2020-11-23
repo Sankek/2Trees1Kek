@@ -101,7 +101,7 @@ void TestTime(const std::string& name, bool make_graphs = true){
 }
 
 [[maybe_unused]] void TestRBTree(){
-    RBTree tree;
+    RBTree<int> tree;
 
     std::cout << "Tree:\n";
     tree.Insert(1);
@@ -135,7 +135,7 @@ void TestTime(const std::string& name, bool make_graphs = true){
 }
 
 [[maybe_unused]] void TestAVLTree(){
-    AVLTree tree;
+    AVLTree<int> tree;
     tree.Insert(12);
     tree.Insert(11);
     tree.Insert( 9);
@@ -157,9 +157,9 @@ int main() {
 //    TestRBTree();
 //    TestAVLTree();
     std::cout << '\n' << "TESTING RBTree." << '\n';
-    TestTime<RBTree>("RBTree_timings", true);
+    TestTime<RBTree<int>>("RBTree_timings", true);
     std::cout << '\n' << "TESTING AVLTree."  << '\n';
-    TestTime<AVLTree>("AVLTree_timings", true);
+    TestTime<AVLTree<int>>("AVLTree_timings", true);
 
     return 0;
 }
