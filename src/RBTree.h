@@ -23,12 +23,12 @@ public:
     void Delete(const T& value) override{ DeleteHelper(value, root); };
 
     void ResetRotationsCount() { rotations_count = 0; };
-    T GetRotationsCount(){ return rotations_count; };
+    int_fast32_t GetRotationsCount(){ return rotations_count; };
     void PrettyPrint();
 private:
     using NodePtr = RBNode<T>*;
     NodePtr root{};
-    T rotations_count{};
+    int_fast32_t rotations_count{};
 
     void Destroy(NodePtr node);
     void CopyHelper(NodePtr node_copy, NodePtr node);
