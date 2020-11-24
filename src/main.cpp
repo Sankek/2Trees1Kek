@@ -67,6 +67,11 @@ void TestTime(const std::string& name, bool make_graphs = true){
     Tree tree;
     Timer time_it;
     std::fstream file;
+
+    std::string str = "python scripts/create_directory.py data";
+    const char* cmd_mkdir = str.c_str();
+    system(cmd_mkdir);
+
     file.open("data/" + name + ".csv", std::fstream::out);
     file << "N" << ',' << "elapsed_find_time" << ',' << "elapsed_insert_time" << ',' << "elapsed_delete_time" << '\n';
 
