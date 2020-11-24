@@ -17,7 +17,7 @@ double AverageTime(Tree &tree, int64_t max, bool (*func) (Tree&, int), bool copy
     int64_t current_index;
     double time, average_time = 0;
     int64_t first_index;
-    bool enough_size = false;
+    bool enough_size = false; // we want to insert/find/delete nonrepeating items; if enough_size=true wa can, else - we can't
     if (max >= num_executions - 2) {
         first_index = max / 2 - (num_executions / 2) + 2;
         enough_size = true;
