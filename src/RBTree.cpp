@@ -34,32 +34,12 @@ void RBTree<T>::PrintHelper(NodePtr start_node, std::string indent, bool last){
 }
 
 template <class T>
-void RBTree<T>::CopyHelper(NodePtr node_copy, NodePtr node) {
-    if (node != nullptr) {
-        node_copy->data = node->data;
-        node_copy->color = node->color;
-
-        if (node->left != nullptr) {
-            auto node_copy_left = new RBNode<T>;
-            node_copy_left->parent = node_copy;
-            node_copy->left = node_copy_left;
-        }
-
-        if (node->right != nullptr) {
-            auto node_copy_right = new RBNode<T>;
-            node_copy_right->parent = node_copy;
-            node_copy->right = node_copy_right;
-        }
-
-        CopyHelper(node_copy->left, node->left);
-        CopyHelper(node_copy->right, node->right);
-    }
-}
-
-template <class T>
 RBTree<T>::RBTree(const RBTree<T> &tree){
-    root = new RBNode<T>;
-    CopyHelper(root, tree.root);
+    if (tree.root != nullptr){
+        root = new RBNode<T>;
+        *root = *tree.root;
+    }
+    rotations_count = tree.rotations_count;
 }
 
 template <class T>
@@ -69,24 +49,18 @@ RBTree<T>& RBTree<T>::operator=(const RBTree<T> &tree){
         return *this;
 
     // do the copy
-    Destroy(root);
-    root = new RBNode<T>;
-    CopyHelper(root, tree.root);
+    if (tree.root == nullptr){
+        root->~RBNode();
+        delete root;
+    } else {
+        if (root == nullptr){
+            root = new RBNode<T>;
+        }
+        *root = *tree.root;
+    }
+    rotations_count = tree.rotations_count;
 
     return *this;
-}
-
-template <class T>
-void RBTree<T>::Destroy(NodePtr node){
-    if (node) {
-        if (node->left) {
-            Destroy(node->left);
-        }
-        if (node->right) {
-            Destroy(node->right);
-        }
-    }
-    delete node;
 }
 
 template <class T>

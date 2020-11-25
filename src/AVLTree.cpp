@@ -4,40 +4,22 @@
 
 
 template <class T>
-int32_t AVLTree<T>::get_rotations(){
-    return rotations;
+int32_t AVLTree<T>::get_rotations_count(){
+    return rotations_count;
 }
 
 template <class T>
-void AVLTree<T>::null_rotations(){
-    rotations = 0;
-}
-
-template <class T>
-void AVLTree<T>::CopyHelper(AVLNode<T>* node_copy, AVLNode<T>* node) {
-    if (node != nullptr) {
-        node_copy->key = node->key;
-        node_copy->height = node->height;
-
-        if (node->left != nullptr) {
-            auto node_copy_left = new AVLNode<T>;
-            node_copy->left = node_copy_left;
-        }
-
-        if (node->right != nullptr) {
-            auto node_copy_right = new AVLNode<T>;
-            node_copy->right = node_copy_right;
-        }
-
-        CopyHelper(node_copy->left, node->left);
-        CopyHelper(node_copy->right, node->right);
-    }
+void AVLTree<T>::ResetRotationsCount(){
+    rotations_count = 0;
 }
 
 template <class T>
 AVLTree<T>::AVLTree(const AVLTree<T> &tree){
-    root = new AVLNode<T>;
-    CopyHelper(root, tree.root);
+    if (tree.root != nullptr){
+        root = new AVLNode<T>;
+        *root = *tree.root;
+    }
+    rotations_count = tree.rotations_count;
 }
 
 template <class T>
@@ -47,25 +29,18 @@ AVLTree<T>& AVLTree<T>::operator=(const AVLTree<T> &tree){
         return *this;
 
     // do the copy
-    Destroy(root);
-    root = new AVLNode<T>;
-    CopyHelper(root, tree.root);
+    if (tree.root == nullptr){
+        root->~AVLNode();
+        delete root;
+    } else {
+        if (root == nullptr){
+            root = new AVLNode<T>;
+        }
+        *root = *tree.root;
+    }
+    rotations_count = tree.rotations_count;
 
     return *this;
-}
-
-
-template <class T>
-void AVLTree<T>::Destroy(AVLNode<T>* node){
-    if (node) {
-        if (node->left) {
-            Destroy(node->left);
-        }
-        if (node->right) {
-            Destroy(node->right);
-        }
-    }
-    delete node;
 }
 
 
@@ -90,7 +65,7 @@ void AVLTree<T>::FixHeight(AVLNode<T>* p)
 
 template <class T>
 AVLNode<T>* AVLTree<T>::RotateRight(AVLNode<T>* p) // правый поворот вокруг p
-{   rotations++;
+{   rotations_count++;
     if (p==root){
         AVLNode<T>* q = p->left;
         p->left = q->right;
@@ -111,7 +86,7 @@ AVLNode<T>* AVLTree<T>::RotateRight(AVLNode<T>* p) // правый поворо�
 
 template <class T>
 AVLNode<T>* AVLTree<T>::RotateLeft(AVLNode<T>* q) // левый поворот вокруг q
-{   rotations++;
+{   rotations_count++;
     if(q==root){
         AVLNode<T>* p = q->right;
         q->right = p->left;
@@ -157,9 +132,9 @@ AVLNode<T>* AVLTree<T>::InsertHelper(AVLNode<T>* p, const T& k){ // вставк
         if(root == nullptr){root = temp_node;}
         return temp_node;
     }
-    if( k<p->key )
+    if( k<p->data )
         p->left = InsertHelper(p->left,k);
-    else if (k>p->key)
+    else if (k>p->data)
         p->right = InsertHelper(p->right,k);
     return Balance(p);
 }
@@ -172,9 +147,9 @@ void AVLTree<T>::Insert(const T& k){ // вставка ключа k в дере�
 template <class T>
 bool AVLTree<T>::FindHelper(AVLNode<T>* p, const T& k){
     if( !p ) return false;
-    if( k<p->key )
+    if( k<p->data )
         return FindHelper(p->left, k);
-    else if (k>p->key)
+    else if (k>p->data)
         return FindHelper(p->right, k);
     else return true;
 }
@@ -200,11 +175,11 @@ AVLNode<T>* AVLTree<T>::RemoveMin(AVLNode<T>* p){ // удаление узла �
 template <class T>
 AVLNode<T>* AVLTree<T>::DeleteHelper(AVLNode<T>* p, const T& k){ // удаление ключа k из дерева p{
     if( !p ) return nullptr;
-    if( k < p->key )
+    if( k < p->data )
         p->left = DeleteHelper(p->left, k);
-    else if( k > p->key )
+    else if( k > p->data )
         p->right = DeleteHelper(p->right, k);
-    else //  k == p->key
+    else //  k == p->data
     {
         AVLNode<T>* q = p->left;
         AVLNode<T>* r = p->right;
@@ -242,7 +217,7 @@ void AVLTree<T>::Delete(const T& k){
 template <class T>
 void AVLTree<T>::PreOrderTraversalHelper(AVLNode<T>* p) {
     if (p) {
-        std::cout<<p->key<<' ';
+        std::cout << p->data << ' ';
         PreOrderTraversalHelper(p->left);
         PreOrderTraversalHelper(p->right);
     }

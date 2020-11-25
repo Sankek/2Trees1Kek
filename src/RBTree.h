@@ -12,9 +12,7 @@ template <class T>
 class RBTree : public ITree<T> {
 public:
     RBTree() = default;
-    ~RBTree() override{
-        Destroy(root);
-    }
+    ~RBTree() override{ delete root; }
     RBTree(const RBTree &tree);
     RBTree& operator=(const RBTree &tree);
 
@@ -23,15 +21,13 @@ public:
     void Delete(const T& value) override{ DeleteHelper(value, root); };
 
     void ResetRotationsCount() { rotations_count = 0; };
-    int_fast32_t GetRotationsCount(){ return rotations_count; };
+    int_fast32_t get_rotations_count(){ return rotations_count; };
     void PrettyPrint();
 private:
     using NodePtr = RBNode<T>*;
     NodePtr root{};
     int_fast32_t rotations_count{};
 
-    void Destroy(NodePtr node);
-    void CopyHelper(NodePtr node_copy, NodePtr node);
     bool FindHelper(const T& value, NodePtr node);
 
     NodePtr left(NodePtr n);

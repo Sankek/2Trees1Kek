@@ -6,4 +6,4 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR})
 
 AUX_SOURCE_DIRECTORY(src SOURCES)
 
-add_executable(2Trees1Kek ${SOURCES})
+add_executable(2Trees1Kek ${SOURCES} src/RBNode.cpp src/AVLNode.cpp)
