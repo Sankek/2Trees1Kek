@@ -30,7 +30,6 @@ AVLTree<T>& AVLTree<T>::operator=(const AVLTree<T> &tree){
 
     // do the copy
     if (tree.root == nullptr){
-        root->~AVLNode();
         delete root;
     } else {
         if (root == nullptr){
@@ -185,9 +184,13 @@ AVLNode<T>* AVLTree<T>::DeleteHelper(AVLNode<T>* p, const T& k){ // удален
         AVLNode<T>* r = p->right;
         if (p==root) {
             if( !r ) {
+                p->left = nullptr;
+                p->right = nullptr;
                 delete p;
                 return root = q;
             }
+            p->left = nullptr;
+            p->right = nullptr;
             delete p;
             AVLNode<T>* min = FindMin(r);
             min->right = RemoveMin(r);
@@ -196,9 +199,13 @@ AVLNode<T>* AVLTree<T>::DeleteHelper(AVLNode<T>* p, const T& k){ // удален
             return Balance(root);
         } else {
             if( !r ) {
+                p->left = nullptr;
+                p->right = nullptr;
                 delete p;
                 return q;
             }
+            p->left = nullptr;
+            p->right = nullptr;
             delete p;
             AVLNode<T>* min = FindMin(r);
             min->right = RemoveMin(r);
@@ -226,6 +233,7 @@ void AVLTree<T>::PreOrderTraversalHelper(AVLNode<T>* p) {
 template <class T>
 void AVLTree<T>::PreOrderTraversal(){
     PreOrderTraversalHelper(root);
+    std::cout<<'\n';
 }
 
 

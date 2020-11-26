@@ -183,11 +183,11 @@ void TestTime(const std::string& name, bool make_graphs = true){
 
 int main() {
 //    TestRBTree();
-    TestAVLTree();
-//    std::cout << '\n' << "TESTING RBTree." << '\n';
-//    TestTime<RBTree<int>>("RBTree_timings", true);
-//    std::cout << '\n' << "TESTING AVLTree."  << '\n';
-//    TestTime<AVLTree<int>>("AVLTree_timings", true);
+//    TestAVLTree();
+    std::cout << '\n' << "TESTING RBTree." << '\n';
+    TestTime<RBTree<int>>("RBTree_timings", true);
+    std::cout << '\n' << "TESTING AVLTree."  << '\n';
+    TestTime<AVLTree<int>>("AVLTree_timings", true);
 
     return 0;
 }
