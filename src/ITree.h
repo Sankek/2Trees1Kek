@@ -1,14 +1,15 @@
-#ifndef ITREE_H
-#define ITREE_H
+// Copyright 2020 Alexander Izyurov, Semen Matrenok, Michael Pavlov
 
-template <class T>
+#ifndef SRC_ITREE_H_
+#define SRC_ITREE_H_
+
+template<class T>
 class ITree {
-public:
-    virtual ~ITree() = default;
-    virtual bool Find(const T& value) = 0;
-    virtual void Insert(const T& value) = 0;
-    virtual void Delete(const T& value) = 0;
+ public:
+  virtual ~ITree() = default;
+  virtual bool Find(const T &value) = 0;
+  virtual void Insert(const T &value) = 0;
+  virtual void Delete(const T &value) = 0;
 };
 
-
-#endif //ITREE_H
+#endif  // SRC_ITREE_H_
