@@ -220,8 +220,8 @@ void AVLTree<T>::Delete(const T &k) {
 template<class T>
 void AVLTree<T>::PreOrderTraversalHelper(AVLNode<T> *p) {
   if (p) {
-    std::cout << p->data << ' ';
     PreOrderTraversalHelper(p->left);
+    std::cout << p->data << ' ';
     PreOrderTraversalHelper(p->right);
   }
 }
